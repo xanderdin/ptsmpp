@@ -27,7 +27,7 @@ class IEncoder(object):
     def decode(self, file):
         """Takes file stream in and returns an object representing the type"""
         raise NotImplementedError()
-        
+
     def read(self, file, size):
         bytesRead = file.read(size)
         length = len(bytesRead)
@@ -38,7 +38,7 @@ class IEncoder(object):
         return bytesRead
 
 class EmptyEncoder(IEncoder):
-    
+
     def encode(self, value):
         return ''
 
@@ -50,13 +50,13 @@ class PDUNullableFieldEncoder(IEncoder):
     nullable = True
     decodeNull = False
     requireNull = False
-    
+
     def __init__(self, **kwargs):
         self.nullable = kwargs.get('nullable', self.nullable)
         self.decodeNull = kwargs.get('decodeNull', self.decodeNull)
         self.requireNull = kwargs.get('requireNull', self.requireNull)
         self._validateParams()
-        
+
     def _validateParams(self):
         if self.decodeNull:
             if not self.nullable:
@@ -98,7 +98,7 @@ class PDUNullableFieldEncoder(IEncoder):
     def _decode(self, bytes):
         """Takes bytes in and returns an object representing the type"""
         raise NotImplementedError()
-    
+
 class IntegerBaseEncoder(PDUNullableFieldEncoder):
     size = None
     sizeFmtMap = {
@@ -106,20 +106,20 @@ class IntegerBaseEncoder(PDUNullableFieldEncoder):
         2: '!H',
         4: '!L',
     }
-    
+
     #pylint: disable-msg=E0213
     def assertFmtSizes(sizeFmtMap):
         for (size, fmt) in sizeFmtMap.items():
             assert struct.calcsize(fmt) == size
-            
+
     #Verify platform sizes match protocol
     assertFmtSizes(sizeFmtMap)
 
     def __init__(self, **kwargs):
         PDUNullableFieldEncoder.__init__(self, **kwargs)
-        
-        self.nullHex = '00' * self.size 
-        
+
+        self.nullHex = '00' * self.size
+
         self.max = 2 ** (8 * self.size) - 1
         self.min = 0
         if 'max' in kwargs:
@@ -137,21 +137,21 @@ class IntegerBaseEncoder(PDUNullableFieldEncoder):
         if value > self.max:
             raise ValueError("Value %d exceeds max %d" % (value, self.max))
         if value < self.min:
-            raise ValueError("Value %d is less than min %d" % (value, self.min))            
+            raise ValueError("Value %d is less than min %d" % (value, self.min))
         return struct.pack(self.sizeFmtMap[self.size], value)
-        
+
     def _read(self, file):
         return self.read(file, self.size)
-        
+
     def _decode(self, bytes):
         return struct.unpack(self.sizeFmtMap[self.size], bytes)[0]
 
 class Int4Encoder(IntegerBaseEncoder):
     size = 4
-    
+
 class Int1Encoder(IntegerBaseEncoder):
     size = 1
-    
+
 class Int2Encoder(IntegerBaseEncoder):
     size = 2
 
@@ -180,7 +180,7 @@ class OctetStringEncoder(PDUNullableFieldEncoder):
         if self.getSize() == 0:
             return ''
         return self.read(file, self.getSize())
-        
+
     def _decode(self, bytes):
         return bytes
 
@@ -215,12 +215,12 @@ class COctetStringEncoder(PDUNullableFieldEncoder):
             if c == '\0':
                 break
         return result
-        
+
     def _decode(self, bytes):
         if self.maxSize is not None:
             if len(bytes) > self.maxSize:
                 errStr = "COctetString is longer than allowed maximum size (%d)" % (self.maxSize)
-                raise self.decodeErrorClass(errStr, self.decodeErrorStatus)                
+                raise self.decodeErrorClass(errStr, self.decodeErrorStatus)
         return bytes[:-1]
 
 class IntegerWrapperEncoder(PDUNullableFieldEncoder):
@@ -245,10 +245,10 @@ class IntegerWrapperEncoder(PDUNullableFieldEncoder):
             raise ValueError("Unknown %s name %s" % (self.fieldName, name))
         intVal = self.nameMap[name]
         return self.encoder.encode(intVal)
-        
+
     def _read(self, file):
         return self.encoder._read(file)
-        
+
     def _decode(self, bytes):
         intVal = self.encoder._decode(bytes)
         if intVal not in self.valueMap:
@@ -265,7 +265,7 @@ class CommandIdEncoder(IntegerWrapperEncoder):
     pduType = pdu_types.CommandId
     decodeErrorClass = PDUCorruptError
     decodeErrorStatus = pdu_types.CommandStatus.ESME_RINVCMDID
-        
+
 class CommandStatusEncoder(Int4Encoder):
     nullable = False
 
@@ -290,7 +290,7 @@ class TagEncoder(IntegerWrapperEncoder):
     encoder = Int2Encoder()
     pduType = pdu_types.Tag
     decodeErrorStatus = pdu_types.CommandStatus.ESME_RINVOPTPARSTREAM
-    
+
 class EsmClassEncoder(Int1Encoder):
     modeMask = 0x03
     typeMask = 0x3c
@@ -300,7 +300,7 @@ class EsmClassEncoder(Int1Encoder):
         modeName = str(esmClass.mode)
         typeName = str(esmClass.type)
         gsmFeatureNames = [str(f) for f in esmClass.gsmFeatures]
-    
+
         if modeName not in constants.esm_class_mode_name_map:
             raise ValueError("Unknown esm_class mode name %s" % modeName)
         if typeName not in constants.esm_class_type_name_map:
@@ -308,36 +308,36 @@ class EsmClassEncoder(Int1Encoder):
         for featureName in gsmFeatureNames:
             if featureName not in constants.esm_class_gsm_features_name_map:
                 raise ValueError("Unknown esm_class GSM feature name %s" % featureName)
-    
+
         modeVal = constants.esm_class_mode_name_map[modeName]
         typeVal = constants.esm_class_type_name_map[typeName]
         gsmFeatureVals = [constants.esm_class_gsm_features_name_map[fName] for fName in gsmFeatureNames]
-    
+
         intVal = modeVal | typeVal
         for fVal in gsmFeatureVals:
             intVal |= fVal
-        
+
         return Int1Encoder().encode(intVal)
-    
+
     def _decode(self, bytes):
         intVal = Int1Encoder()._decode(bytes)
         modeVal = intVal & self.modeMask
         typeVal = intVal & self.typeMask
         gsmFeaturesVal = intVal & self.gsmFeaturesMask
-        
+
         if modeVal not in constants.esm_class_mode_value_map:
             raise PDUParseError("Unknown esm_class mode %s" % modeVal, pdu_types.CommandStatus.ESME_RINVESMCLASS)
         if typeVal not in constants.esm_class_type_value_map:
             raise PDUParseError("Unknown esm_class type %s" % typeVal, pdu_types.CommandStatus.ESME_RINVESMCLASS)
-        
+
         modeName = constants.esm_class_mode_value_map[modeVal]
         typeName = constants.esm_class_type_value_map[typeVal]
         gsmFeatureNames = [constants.esm_class_gsm_features_value_map[fVal] for fVal in constants.esm_class_gsm_features_value_map.keys() if fVal & gsmFeaturesVal]
-        
+
         mode = getattr(pdu_types.EsmClassMode, modeName)
         type = getattr(pdu_types.EsmClassType, typeName)
         gsmFeatures = [getattr(pdu_types.EsmClassGsmFeatures, fName) for fName in gsmFeatureNames]
-        
+
         return pdu_types.EsmClass(mode, type, gsmFeatures)
 
 class RegisteredDeliveryEncoder(Int1Encoder):
@@ -348,43 +348,43 @@ class RegisteredDeliveryEncoder(Int1Encoder):
     def _encode(self, registeredDelivery):
         receiptName = str(registeredDelivery.receipt)
         smeOriginatedAckNames = [str(a) for a in registeredDelivery.smeOriginatedAcks]
-    
+
         if receiptName not in constants.registered_delivery_receipt_name_map:
             raise ValueError("Unknown registered_delivery receipt name %s" % receiptName)
         for ackName in smeOriginatedAckNames:
             if ackName not in constants.registered_delivery_sme_originated_acks_name_map:
                 raise ValueError("Unknown registered_delivery SME orginated ack name %s" % ackName)
-    
+
         receiptVal = constants.registered_delivery_receipt_name_map[receiptName]
         smeOriginatedAckVals = [constants.registered_delivery_sme_originated_acks_name_map[ackName] for ackName in smeOriginatedAckNames]
         intermediateNotificationVal = 0
         if registeredDelivery.intermediateNotification:
             intermediateNotificationVal = self.intermediateNotificationMask
-    
+
         intVal = receiptVal | intermediateNotificationVal
         for aVal in smeOriginatedAckVals:
             intVal |= aVal
-        
+
         return Int1Encoder().encode(intVal)
-    
+
     def _decode(self, bytes):
         intVal = Int1Encoder()._decode(bytes)
         receiptVal = intVal & self.receiptMask
         smeOriginatedAcksVal = intVal & self.smeOriginatedAcksMask
         intermediateNotificationVal = intVal & self.intermediateNotificationMask
-                
+
         if receiptVal not in constants.registered_delivery_receipt_value_map:
             raise PDUParseError("Unknown registered_delivery receipt %s" % receiptVal, pdu_types.CommandStatus.ESME_RINVREGDLVFLG)
-        
+
         receiptName = constants.registered_delivery_receipt_value_map[receiptVal]
         smeOriginatedAckNames = [constants.registered_delivery_sme_originated_acks_value_map[aVal] for aVal in constants.registered_delivery_sme_originated_acks_value_map.keys() if aVal & smeOriginatedAcksVal]
-        
+
         receipt = getattr(pdu_types.RegisteredDeliveryReceipt, receiptName)
         smeOriginatedAcks = [getattr(pdu_types.RegisteredDeliverySmeOriginatedAcks, aName) for aName in smeOriginatedAckNames]
         intermediateNotification = False
         if intermediateNotificationVal:
             intermediateNotification = True
-        
+
         return pdu_types.RegisteredDelivery(receipt, smeOriginatedAcks, intermediateNotification)
 
 class DataCodingEncoder(Int1Encoder):
@@ -392,17 +392,17 @@ class DataCodingEncoder(Int1Encoder):
     schemeDataMask = 0x0f
     gsmMsgCodingMask = 0x04
     gsmMsgClassMask = 0x03
-        
+
     def _encode(self, dataCoding):
         return Int1Encoder().encode(self._encodeAsInt(dataCoding))
-        
+
     def _encodeAsInt(self, dataCoding):
         if dataCoding.scheme == pdu_types.DataCodingScheme.RAW:
             return dataCoding.schemeData
         if dataCoding.scheme == pdu_types.DataCodingScheme.DEFAULT:
             return self._encodeDefaultSchemeAsInt(dataCoding)
         return self._encodeSchemeAsInt(dataCoding)
-    
+
     def _encodeDefaultSchemeAsInt(self, dataCoding):
         defaultName = str(dataCoding.schemeData)
         if defaultName not in constants.data_coding_default_name_map:
@@ -413,18 +413,18 @@ class DataCodingEncoder(Int1Encoder):
         schemeVal = self._encodeSchemeNameAsInt(dataCoding)
         schemeDataVal = self._encodeSchemeDataAsInt(dataCoding)
         return schemeVal | schemeDataVal
-        
+
     def _encodeSchemeNameAsInt(self, dataCoding):
         schemeName = str(dataCoding.scheme)
         if schemeName not in constants.data_coding_scheme_name_map:
             raise ValueError("Unknown data_coding scheme name %s" % schemeName)
         return constants.data_coding_scheme_name_map[schemeName]
-        
+
     def _encodeSchemeDataAsInt(self, dataCoding):
         if dataCoding.scheme == pdu_types.DataCodingScheme.GSM_MESSAGE_CLASS:
             return self._encodeGsmMsgSchemeDataAsInt(dataCoding)
         raise ValueError("Unknown data coding scheme %s" % dataCoding.scheme)
-        
+
     def _encodeGsmMsgSchemeDataAsInt(self, dataCoding):
         msgCodingName = str(dataCoding.schemeData.msgCoding)
         msgClassName = str(dataCoding.schemeData.msgClass)
@@ -433,7 +433,7 @@ class DataCodingEncoder(Int1Encoder):
             raise ValueError("Unknown data_coding gsm msg coding name %s" % msgCodingName)
         if msgClassName not in constants.data_coding_gsm_message_class_name_map:
             raise ValueError("Unknown data_coding gsm msg class name %s" % msgClassName)
-            
+
         msgCodingVal = constants.data_coding_gsm_message_coding_name_map[msgCodingName]
         msgClassVal = constants.data_coding_gsm_message_class_name_map[msgClassName]
         return msgCodingVal | msgClassVal
@@ -443,18 +443,18 @@ class DataCodingEncoder(Int1Encoder):
         scheme = self._decodeScheme(intVal)
         schemeData = self._decodeSchemeData(scheme, intVal)
         return pdu_types.DataCoding(scheme, schemeData)
-        
+
     def _decodeScheme(self, intVal):
         schemeVal = intVal & self.schemeMask
         if schemeVal in constants.data_coding_scheme_value_map:
             schemeName = constants.data_coding_scheme_value_map[schemeVal]
             return getattr(pdu_types.DataCodingScheme, schemeName)
-        
+
         if intVal in constants.data_coding_default_value_map:
             return pdu_types.DataCodingScheme.DEFAULT
-        
+
         return pdu_types.DataCodingScheme.RAW
-        
+
     def _decodeSchemeData(self, scheme, intVal):
         if scheme == pdu_types.DataCodingScheme.RAW:
             return intVal
@@ -464,29 +464,29 @@ class DataCodingEncoder(Int1Encoder):
             schemeDataVal = intVal & self.schemeDataMask
             return self._decodeGsmMsgSchemeData(schemeDataVal)
         raise ValueError("Unexpected data coding scheme %s" % scheme)
-        
+
     def _decodeDefaultSchemeData(self, intVal):
         if intVal not in constants.data_coding_default_value_map:
             raise ValueError("Unknown data_coding default value %s" % intVal)
         defaultName = constants.data_coding_default_value_map[intVal]
         return getattr(pdu_types.DataCodingDefault, defaultName)
-        
+
     def _decodeGsmMsgSchemeData(self, schemeDataVal):
         msgCodingVal = schemeDataVal & self.gsmMsgCodingMask
         msgClassVal = schemeDataVal & self.gsmMsgClassMask
-        
+
         if msgCodingVal not in constants.data_coding_gsm_message_coding_value_map:
             raise ValueError("Unknown data_coding gsm msg coding value %s" % msgCodingVal)
         if msgClassVal not in constants.data_coding_gsm_message_class_value_map:
             raise ValueError("Unknown data_coding gsm msg class value %s" % msgClassVal)
-        
+
         msgCodingName = constants.data_coding_gsm_message_coding_value_map[msgCodingVal]
         msgClassName = constants.data_coding_gsm_message_class_value_map[msgClassVal]
-        
+
         msgCoding = getattr(pdu_types.DataCodingGsmMsgCoding, msgCodingName)
         msgClass = getattr(pdu_types.DataCodingGsmMsgClass, msgClassName)
         return pdu_types.DataCodingGsmMsg(msgCoding, msgClass)
-        
+
 class AddrTonEncoder(IntegerWrapperEncoder):
     fieldName = 'addr_ton'
     nameMap = constants.addr_ton_name_map
@@ -553,16 +553,39 @@ class CallbackNumEncoder(OctetStringEncoder):
         encoded += self.npiEncoder._encode(callbackNum.npi)
         encoded += callbackNum.digits
         return encoded
-    
+
     def _decode(self, bytes):
         if len(bytes) < 3:
             raise PDUParseError("Invalid callback_num size %s" % len(bytes), pdu_types.CommandStatus.ESME_RINVOPTPARAMVAL)
-        
+
         digitModeIndicator = self.digitModeIndicatorEncoder._decode(bytes[0])
         ton = self.tonEncoder._decode(bytes[1])
         npi = self.npiEncoder._decode(bytes[2])
         digits = bytes[3:]
         return pdu_types.CallbackNum(digitModeIndicator, ton, npi, digits)
+
+
+class CallbackNetworkErrorCodeTypeEncoder(IntegerWrapperEncoder):
+    nullable = False
+    fieldName = 'network_error_code_type'
+    nameMap = constants.network_error_code_type_name_map
+    valueMap = constants.network_error_code_type_value_map
+    encoder = Int1Encoder()
+    pduType = pdu_types.NetworkErrorCodeNetworkType
+
+class NetworkErrorCodeEncoder(OctetStringEncoder):
+    networkErrorCodeTypeEncoder = CallbackNetworkErrorCodeTypeEncoder()
+    errorCodeEncoder = Int2Encoder()
+
+    def _decode(self, bytes):
+        if len(bytes) != 3:
+            raise PDUParseError(
+                "Invalid network_error_code size %s" % len(bytes),
+                pdu_types.CommandStatus.ESME_RINVOPTPARAMVAL)
+
+        errorCodeType = self.networkErrorCodeTypeEncoder._decode(bytes[0])
+        errorCode = self.errorCodeEncoder._decode(bytes[1:])
+        return pdu_types.NetworkErrorCode(errorCodeType, errorCode)
 
 class SubaddressTypeTagEncoder(IntegerWrapperEncoder):
     nullable = False
@@ -582,7 +605,7 @@ class SubaddressEncoder(OctetStringEncoder):
         valSize = self.getSize() - 1 if self.getSize() is not None else None
         encoded += OctetStringEncoder(valSize)._encode(subaddress.value)
         return encoded
-    
+
     def _decode(self, bytes):
         if len(bytes) < 2:
             raise PDUParseError("Invalid subaddress size %s" % len(bytes), pdu_types.CommandStatus.ESME_RINVOPTPARAMVAL)
@@ -639,7 +662,7 @@ class DisplayTimeEncoder(IntegerWrapperEncoder):
     valueMap = constants.display_time_value_map
     encoder = Int1Encoder()
     pduType = pdu_types.DisplayTime
-    
+
 class MsAvailabilityStatusEncoder(IntegerWrapperEncoder):
     fieldName = 'ms_availability_status'
     nameMap = constants.ms_availability_status_name_map
@@ -669,22 +692,22 @@ class TimeEncoder(PDUNullableFieldEncoder):
 
     def _encode(self, time):
         str = smpp_time.unparse(time)
-        return self.encoder._encode(str)    
-    
+        return self.encoder._encode(str)
+
     def _read(self, file):
         return self.encoder._read(file)
-    
+
     def _decode(self, bytes):
         timeStr = self.encoder._decode(bytes)
         try:
             return smpp_time.parse(timeStr)
         except Exception, e:
             errStr = str(e)
-            raise self.decodeErrorClass(errStr, self.decodeErrorStatus)                
+            raise self.decodeErrorClass(errStr, self.decodeErrorStatus)
 
 class ShortMessageEncoder(IEncoder):
     smLengthEncoder = Int1Encoder(max=254)
-        
+
     def encode(self, shortMessage):
         if shortMessage is None:
             shortMessage = ''
@@ -731,7 +754,7 @@ class OptionEncoder(IEncoder):
             #T.dpf_result: DpfResultEncoder(),
             #T.set_dpf: SetDpfEncoder(),
             T.ms_availability_status: MsAvailabilityStatusEncoder(),
-            #T.network_error_code: NetworkErrorCodeEncoder(),
+            T.network_error_code: NetworkErrorCodeEncoder(self.getLength),
             T.message_payload: OctetStringEncoder(self.getLength),
             T.delivery_failure_reason: DeliveryFailureReasonEncoder(),
             #T.more_messages_to_send: MoreMessagesToSendEncoder(),
@@ -761,27 +784,32 @@ class OptionEncoder(IEncoder):
             Int2Encoder().encode(length),
             encodedValue,
         ], '')
-    
+
     def decode(self, file):
         tag = TagEncoder().decode(file)
         self.length = Int2Encoder().decode(file)
         if tag not in self.options:
-            raise PDUParseError("Optional param %s unknown" % tag, pdu_types.CommandStatus.ESME_ROPTPARNOTALLWD)
+            # Add vendor specific tag to options
+            if tag.key.startswith('vendor_specific_'):
+                self.options[tag] = OctetStringEncoder(self.getLength)
+            else:
+                raise PDUParseError("Optional param %s unknown" % tag, pdu_types.CommandStatus.ESME_ROPTPARNOTALLWD)
         encoder = self.options[tag]
         iBeforeDecode = file.tell()
+
         value = None
         try:
             value = encoder.decode(file)
         except PDUParseError, e:
             e.status = pdu_types.CommandStatus.ESME_RINVOPTPARAMVAL
             raise e
-        
+
         iAfterDecode = file.tell()
         parseLen = iAfterDecode - iBeforeDecode
         if parseLen != self.length:
-            raise PDUParseError("Invalid option length: labeled [%d] but parsed [%d]" % (self.length, parseLen), pdu_types.CommandStatus.ESME_RINVPARLEN)                
+            raise PDUParseError("Invalid option length: labeled [%d] but parsed [%d]" % (self.length, parseLen), pdu_types.CommandStatus.ESME_RINVPARLEN)
         return pdu_types.Option(tag, value)
-        
+
 class PDUEncoder(IEncoder):
     HEADER_LEN = 16
 
@@ -835,7 +863,7 @@ class PDUEncoder(IEncoder):
         'final_date': TimeEncoder(),
         'error_code':Int1Encoder(decodeNull=True),
     }
-    
+
     CustomRequiredParamEncoders = {
         pdu_types.CommandId.alert_notification: {
             'source_addr': COctetStringEncoder(65, decodeErrorStatus=pdu_types.CommandStatus.ESME_RINVSRCADR),
@@ -864,38 +892,38 @@ class PDUEncoder(IEncoder):
     def encode(self, pdu):
         body = self.encodeBody(pdu)
         return self.encodeHeader(pdu, body) + body
-    
+
     def decode(self, file):
         iBeforeDecode = file.tell()
         headerParams = self.decodeHeader(file)
         pduKlass = operations.getPDUClass(headerParams['command_id'])
         pdu = pduKlass(headerParams['sequence_number'], headerParams['command_status'])
         self.decodeBody(file, pdu, headerParams['command_length'] - self.HEADER_LEN)
-        
+
         iAfterDecode = file.tell()
         parsedLen = iAfterDecode - iBeforeDecode
         if parsedLen != headerParams['command_length']:
             raise PDUCorruptError("Invalid command length: expected %d, parsed %d" % (headerParams['command_length'], parsedLen), pdu_types.CommandStatus.ESME_RINVCMDLEN)
-                    
+
         return pdu
-    
+
     def decodeHeader(self, file):
         headerParams = self.decodeRequiredParams(self.HeaderParams, self.HeaderEncoders, file)
         if headerParams['command_length'] < self.HEADER_LEN:
             raise PDUCorruptError("Invalid command_length %d" % headerParams['command_length'], pdu_types.CommandStatus.ESME_RINVCMDLEN)
         return headerParams
-        
+
     def decodeBody(self, file, pdu, bodyLength):
         mandatoryParams = {}
         optionalParams = {}
-        
+
         #Some PDU responses have no defined body when the status is not 0
         #    c.f. 4.1.4. "BIND_RECEIVER_RESP"
         #    c.f. 4.4.2. SMPP PDU Definition "SUBMIT_SM_RESP"
         if pdu.status != pdu_types.CommandStatus.ESME_ROK:
             if pdu.noBodyOnError:
                 return
-        
+
         iBeforeMParams = file.tell()
         if len(pdu.mandatoryParams) > 0:
             mandatoryParams = self.decodeRequiredParams(pdu.mandatoryParams, self.getRequiredParamEncoders(pdu), file)
@@ -904,25 +932,25 @@ class PDUEncoder(IEncoder):
         if len(pdu.optionalParams) > 0:
             optionalParams = self.decodeOptionalParams(pdu.optionalParams, file, bodyLength - mParamsLen)
         pdu.params = dict(mandatoryParams.items() + optionalParams.items())
-    
+
     def encodeBody(self, pdu):
         body = ''
-        
+
         #Some PDU responses have no defined body when the status is not 0
         #    c.f. 4.1.4. "BIND_RECEIVER_RESP"
         #    c.f. 4.4.2. SMPP PDU Definition "SUBMIT_SM_RESP"
         if pdu.status != pdu_types.CommandStatus.ESME_ROK:
             if pdu.noBodyOnError:
                 return body
-        
+
         for paramName in pdu.mandatoryParams:
             if paramName not in pdu.params:
                 raise ValueError("Missing required parameter: %s" % paramName)
-        
+
         body += self.encodeRequiredParams(pdu.mandatoryParams, self.getRequiredParamEncoders(pdu), pdu.params)
         body += self.encodeOptionalParams(pdu.optionalParams, pdu.params)
         return body
-    
+
     def encodeHeader(self, pdu, body):
         cmdLength = len(body) + self.HEADER_LEN
         headerParams = {
@@ -943,24 +971,24 @@ class PDUEncoder(IEncoder):
                 value = params[paramName]
                 result += self.optionEncoder.encode(pdu_types.Option(tag, value))
         return result
-    
+
     def decodeOptionalParams(self, paramList, file, optionsLength):
         optionalParams = {}
         iBefore = file.tell()
         while file.tell() - iBefore < optionsLength:
             option = self.optionEncoder.decode(file)
             optionName = str(option.tag)
-            if optionName not in paramList:
+            if optionName not in paramList and not optionName.startswith('vendor_specific_'):
                 raise PDUParseError("Invalid option %s" % optionName, pdu_types.CommandStatus.ESME_ROPTPARNOTALLWD)
             optionalParams[optionName] = option.value
         return optionalParams
-        
+
     def encodeRequiredParams(self, paramList, encoderMap, params):
         return string.join([encoderMap[paramName].encode(params[paramName]) for paramName in paramList], '')
-        
+
     def decodeRequiredParams(self, paramList, encoderMap, file):
         params = {}
         for paramName in paramList:
             params[paramName] = encoderMap[paramName].decode(file)
         return params
-    
+

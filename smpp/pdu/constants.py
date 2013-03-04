@@ -289,6 +289,10 @@ tag_name_map = {
     'its_session_info': 0x1383,
 }
 
+# Add vendor specific range to the tag name map
+for val in range(0x1400, 0x3fff):
+    tag_name_map['vendor_specific_' + hex(val)] = val
+
 tag_value_map = dict([(val, key) for (key, val) in tag_name_map.items()])
 
 esm_class_mode_name_map = {
@@ -514,3 +518,10 @@ delivery_failure_reason_name_map = {
     'TEMPORARY_NETWORK_ERROR': 0x03,
 }
 delivery_failure_reason_value_map = dict([(val, key) for (key, val) in delivery_failure_reason_name_map.items()])
+
+network_error_code_type_name_map = {
+    'ANSI-136': 0x01,
+    'IS-95': 0x02,
+    'GSM': 0x03,
+}
+network_error_code_type_value_map = dict([(val, key) for (key, val) in network_error_code_type_name_map.items()])

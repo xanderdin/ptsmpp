@@ -40,7 +40,7 @@ class EncoderTest(unittest.TestCase):
         file = StringIO.StringIO(encoded)
         decoded = encoder.decode(file)
         self.assertEquals(value, decoded)
-        
+
     def do_encode_test(self, encoder, value, hexdumpValue):
         encoded = encoder.encode(value)
         hexEncoded = binascii.b2a_hex(encoded)
@@ -54,7 +54,7 @@ class EncoderTest(unittest.TestCase):
                     print "Letter %d diff [%s] [%s]" % (i, chars1[i], chars2[i])
 
         self.assertEquals(hexdumpValue, hexEncoded)
-        
+
     def do_decode_test(self, encoder, value, hexdumpValue):
         decoded = self.decode(encoder.decode, hexdumpValue)
         self.assertEquals(value, decoded)
@@ -482,7 +482,7 @@ class PDUEncoderTest(EncoderTest):
             ms_availability_status=MsAvailabilityStatus.DENIED,
         )
         self.do_conversion_test(PDUEncoder(), pdu, '0000008900000102000000000000000002015858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858585858580001065959595959595959595959595959595959595959595959595959595959595959595959595959595959595959595959595959595959595959000422000101')
-    
+
     def test_QuerySMResp_conversion(self):
         pdu = QuerySMResp(
             message_id = 'Smsc2003',
@@ -547,7 +547,7 @@ class PDUEncoderTest(EncoderTest):
 
     def test_decode_bad_message_ends_in_middle_of_option(self):
         self.do_decode_corrupt_data_error_test(PDUEncoder().decode, CommandStatus.ESME_RINVMSGLEN, '0000001b8000000900000000000000015453493735383800021000')
-        
+
     def test_SubmitSMResp_error_has_no_body(self):
         pdu = SubmitSMResp(1234, status=CommandStatus.ESME_RMSGQFUL)
         self.assertTrue(len(SubmitSMResp.mandatoryParams) > 0)
@@ -581,6 +581,22 @@ class PDUEncoderTest(EncoderTest):
         pduExpected = BindTransceiverResp(3456, status=CommandStatus.ESME_RINVPASWD)
         self.assertEquals(0, len(pduExpected.params))
         self.do_decode_test(PDUEncoder(), pduExpected, hex)
+
+    def test_decode_PDU_with_a_network_error(self):
+        pduHex = '000000b3000000050000000000000004000101313230383233300005006d6f62696c657761790004000000000000f2006269643a34207375623a30303120646c7672643a303031207375626d697420646174653a3133303232383130303520646f6e6520646174653a3133303232383130303520737461743a554e44454c4956206572723a30303020546578743a48454c4c4f001e000234000427000105042300030300011403000a34343132333435363738'
+        pdu = PDUEncoder().decode(StringIO.StringIO(binascii.a2b_hex(pduHex)))
+
+        network_error_code = pdu.params['network_error_code']
+        self.assertEquals(str(network_error_code.NetworkType), 'GSM')
+        self.assertEquals(network_error_code.ErrorCode, 1)
+
+    def test_decode_PDU_with_a_vendor_specific_TLV(self):
+        pduHex = '000000ac000000050000000000000001000101313230383233300005006d6f62696c657761790004000000000000f2006269643a30207375623a30303120646c7672643a303031207375626d697420646174653a3133303232383038343320646f6e6520646174653a3133303232383038343320737461743a44454c49565244206572723a30303020546578743a48454c4c4f001e0002300004270001021403000a34343132333435363738'
+        pdu = PDUEncoder().decode(StringIO.StringIO(binascii.a2b_hex(pduHex)))
+
+        self.assertIn('vendor_specific_0x1403', pdu.params)
+        self.assertEqual(pdu.params['vendor_specific_0x1403'], '4412345678')
+
 
 if __name__ == '__main__':
     unittest.main()
