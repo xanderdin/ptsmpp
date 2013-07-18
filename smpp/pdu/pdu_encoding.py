@@ -922,6 +922,10 @@ class PDUEncoder(IEncoder):
         #    c.f. 4.4.2. SMPP PDU Definition "SUBMIT_SM_RESP"
         if pdu.status != pdu_types.CommandStatus.ESME_ROK:
             if pdu.noBodyOnError:
+                # Some SMSCs add interface_version to bind_transceiver_resp
+                # even if there is an error. Let's just read the rest
+                # and discard it.
+                file.read()
                 return
 
         iBeforeMParams = file.tell()

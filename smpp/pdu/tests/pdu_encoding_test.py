@@ -598,5 +598,14 @@ class PDUEncoderTest(EncoderTest):
         self.assertEqual(pdu.params['vendor_specific_0x1403'], '4412345678')
 
 
+    def test_decode_bind_tranceiver_resp_error_with_interface_version(self):
+        pduHex = '00000016800000090000000d00000001000210000134'
+        pdu = PDUEncoder().decode(StringIO.StringIO(binascii.a2b_hex(pduHex)))
+
+    def test_decode_bind_tranceiver_resp_error_with_system_id(self):
+        pduHex = '00000011800000090000000d0000000100'
+        pdu = PDUEncoder().decode(StringIO.StringIO(binascii.a2b_hex(pduHex)))
+
+
 if __name__ == '__main__':
     unittest.main()
