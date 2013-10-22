@@ -597,6 +597,15 @@ class PDUEncoderTest(EncoderTest):
         self.assertIn('vendor_specific_0x1403', pdu.params)
         self.assertEqual(pdu.params['vendor_specific_0x1403'], '4412345678')
 
+    def test_decode_DeliverSm_with_optional_network_type(self):
+        pduHex = '000000cc0000000500000000000004f600010131323334353637383930313233000500313233340004000000000000000000000e0001010006000101001e000931386433363937660004270001020424007a69643a30343136353038323837207375623a30303120646c7672643a303031207375626d697420646174653a3133313032323130343920646f6e6520646174653a3133313032323130353420737461743a44454c49565244206572723a30303020746578743a4142432074657374206d6573736167652c206772'
+        pdu = PDUEncoder().decode(StringIO.StringIO(binascii.a2b_hex(pduHex)))
+
+        # This is against specification, but some implementations still
+        # do it
+        self.assertEquals(pdu.params['source_network_type'], NetworkType.GSM)
+        self.assertEquals(pdu.params['dest_network_type'], NetworkType.GSM)
+
 
     def test_decode_bind_tranceiver_resp_error_with_interface_version(self):
         pduHex = '00000016800000090000000d00000001000210000134'
