@@ -344,7 +344,10 @@ class SMPPProtocolBase( protocol.Protocol ):
             self.log.critical('Response PDU received with unknown outbound transaction sequence number %s' % pdu)
             return
 
-        self.endOutboundTransaction(pdu)
+        if isinstance(pdu, SubmitSMResp):
+            self.log.info("SUBMIT_SM_RESP received %s" % (pdu))
+
+    self.endOutboundTransaction(pdu)
 
     def sendPDU(self, pdu):
         """Send a SMPP PDU
