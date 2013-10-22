@@ -347,7 +347,7 @@ class SMPPProtocolBase( protocol.Protocol ):
         if isinstance(pdu, SubmitSMResp):
             self.log.info("SUBMIT_SM_RESP received %s" % (pdu))
 
-    self.endOutboundTransaction(pdu)
+        self.endOutboundTransaction(pdu)
 
     def sendPDU(self, pdu):
         """Send a SMPP PDU
