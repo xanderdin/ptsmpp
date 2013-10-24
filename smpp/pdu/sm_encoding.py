@@ -25,7 +25,7 @@ ShortMessageString = namedtuple('ShortMessageString', 'bytes, unicode, udh')
 class SMStringEncoder(object):
     userDataHeaderEncoder = UserDataHeaderEncoder()
 
-    def decodeSM(self, pdu):
+    def decodeSM(self, pdu, smsc_default_alphabet_encoding='ascii'):
         data_coding = pdu.params['data_coding']
         (smBytes, udhBytes, smStrBytes) = self.splitSM(pdu)
         udh = self.decodeUDH(udhBytes)
@@ -33,7 +33,7 @@ class SMStringEncoder(object):
         if data_coding.scheme == DataCodingScheme.DEFAULT:
             unicodeStr = None
             if data_coding.schemeData == DataCodingDefault.SMSC_DEFAULT_ALPHABET:
-                unicodeStr = unicode(smStrBytes, 'latin_1')
+                unicodeStr = unicode(smStrBytes, smsc_default_alphabet_encoding)
             elif data_coding.schemeData == DataCodingDefault.IA5_ASCII:
                 unicodeStr = unicode(smStrBytes, 'ascii')
             elif data_coding.schemeData == DataCodingDefault.UCS2:

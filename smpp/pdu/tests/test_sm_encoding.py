@@ -36,7 +36,7 @@ class SMDecoderTest(unittest.TestCase):
         #'T- Mobile flip phone \xa7 \xa8 N random special charcters'
         pduHex = '0000006f00000005000000005d3fe724544d4f4249000101313535353132333435363700010131373733383238343037300000000000000000000033542d204d6f62696c6520666c69702070686f6e6520a720a8204e2072616e646f6d207370656369616c20636861726374657273'
         pdu = self.getPDU(pduHex)
-        smStr = SMStringEncoder().decodeSM(pdu)
+        smStr = SMStringEncoder().decodeSM(pdu, 'latin_1')
         self.assertEquals('T- Mobile flip phone \xa7 \xa8 N random special charcters', smStr.bytes)
         self.assertEquals(u'T- Mobile flip phone \xa7 \xa8 N random special charcters', smStr.unicode)
         self.assertEquals(None, smStr.udh)
@@ -106,12 +106,20 @@ class SMDecoderTest(unittest.TestCase):
         self.assertEquals(u'Test', smStr.unicode)
         self.assertEquals(None, smStr.udh)
 
-    def test_message_payload_default_alphabet_accents(self):
+    def test_message_payload_default_alphabet_latin_1(self):
         pduHex = '000000440000000500000000000005c500010133353831323334353637383930000409353531310000000000000000000000000e00010100060001010424000422c5e522'
         pdu = self.getPDU(pduHex)
-        smStr = SMStringEncoder().decodeSM(pdu)
+        smStr = SMStringEncoder().decodeSM(pdu, 'latin_1')
         self.assertEquals('"\xc5\xe5"', smStr.bytes)
         self.assertEquals(u'"\xc5\xe5"', smStr.unicode)
+        self.assertEquals(None, smStr.udh)
+
+    def test_message_payload_default_alphabet_cp437(self):
+        pduHex = '0000003400000005000000000082b931000101333538313233343536373839300000013139363000000000000000000000028f86'
+        pdu = self.getPDU(pduHex)
+        smStr = SMStringEncoder().decodeSM(pdu, 'cp437')
+        self.assertEquals('\x8f\x86', smStr.bytes)
+        self.assertEquals(u'\xc5\xe5', smStr.unicode)
         self.assertEquals(None, smStr.udh)
 
     def test_message_payload_ucs2_accents(self):
