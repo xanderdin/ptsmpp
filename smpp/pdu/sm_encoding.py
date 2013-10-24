@@ -27,14 +27,13 @@ class SMStringEncoder(object):
 
     def decodeSM(self, pdu):
         data_coding = pdu.params['data_coding']
-        #TODO - when to look for message_payload instead of short_message??
         (smBytes, udhBytes, smStrBytes) = self.splitSM(pdu)
         udh = self.decodeUDH(udhBytes)
 
         if data_coding.scheme == DataCodingScheme.DEFAULT:
             unicodeStr = None
             if data_coding.schemeData == DataCodingDefault.SMSC_DEFAULT_ALPHABET:
-                unicodeStr = unicode(smStrBytes, 'ascii')
+                unicodeStr = unicode(smStrBytes, 'latin_1')
             elif data_coding.schemeData == DataCodingDefault.IA5_ASCII:
                 unicodeStr = unicode(smStrBytes, 'ascii')
             elif data_coding.schemeData == DataCodingDefault.UCS2:
@@ -82,6 +81,10 @@ class SMStringEncoder(object):
 
     def splitSM(self, pdu):
         short_message = pdu.params['short_message']
+        # Use message_payload if short_message empty
+        if not short_message and 'message_payload' in pdu.params:
+            short_message = pdu.params['message_payload']
+
         if self.containsUDH(pdu):
             if len(short_message) == 0:
                 raise ValueError("Empty short message")
@@ -90,4 +93,3 @@ class SMStringEncoder(object):
                 raise ValueError("Invalid header len (%d). Longer than short_message len (%d) + 1" % (headerLen, len(short_message)))
             return (short_message, short_message[:headerLen+1], short_message[headerLen+1:])
         return (short_message, None, short_message)
-    

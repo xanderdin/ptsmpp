@@ -36,7 +36,10 @@ class SMDecoderTest(unittest.TestCase):
         #'T- Mobile flip phone \xa7 \xa8 N random special charcters'
         pduHex = '0000006f00000005000000005d3fe724544d4f4249000101313535353132333435363700010131373733383238343037300000000000000000000033542d204d6f62696c6520666c69702070686f6e6520a720a8204e2072616e646f6d207370656369616c20636861726374657273'
         pdu = self.getPDU(pduHex)
-        self.assertRaises(UnicodeDecodeError, SMStringEncoder().decodeSM, pdu)
+        smStr = SMStringEncoder().decodeSM(pdu)
+        self.assertEquals('T- Mobile flip phone \xa7 \xa8 N random special charcters', smStr.bytes)
+        self.assertEquals(u'T- Mobile flip phone \xa7 \xa8 N random special charcters', smStr.unicode)
+        self.assertEquals(None, smStr.udh)
 
     def test_decode_latin1(self):
         pduHex = '0000004200000005000000002a603d56415753424400010131353535313233343536370001013137373338323834303730000000000000000003000645737061f161'
@@ -94,6 +97,38 @@ class SMDecoderTest(unittest.TestCase):
         self.assertFalse(SMStringEncoder().isConcatenatedSM(pdu))
         iElem = SMStringEncoder().getConcatenatedSMInfoElement(pdu)
         self.assertEquals(None, iElem)
+
+    def test_message_payload(self):
+        pduHex = '000000440000000500000000000004e700010132333438303535353734373732000409353531310000000000000000000000000e00010100060001010424000454657374'
+        pdu = self.getPDU(pduHex)
+        smStr = SMStringEncoder().decodeSM(pdu)
+        self.assertEquals('Test', smStr.bytes)
+        self.assertEquals(u'Test', smStr.unicode)
+        self.assertEquals(None, smStr.udh)
+
+    def test_message_payload_default_alphabet_accents(self):
+        pduHex = '000000440000000500000000000005c500010133353831323334353637383930000409353531310000000000000000000000000e00010100060001010424000422c5e522'
+        pdu = self.getPDU(pduHex)
+        smStr = SMStringEncoder().decodeSM(pdu)
+        self.assertEquals('"\xc5\xe5"', smStr.bytes)
+        self.assertEquals(u'"\xc5\xe5"', smStr.unicode)
+        self.assertEquals(None, smStr.udh)
+
+    def test_message_payload_ucs2_accents(self):
+        pduHex = '000000440000000500000000000005c800010133353831323334353637383930000409353531310000000000000000080000000e00010100060001010424000400c100e1'
+        pdu = self.getPDU(pduHex)
+        smStr = SMStringEncoder().decodeSM(pdu)
+        self.assertEquals('\x00\xc1\x00\xe1', smStr.bytes)
+        self.assertEquals(u'\xc1\xe1', smStr.unicode)
+        self.assertEquals(None, smStr.udh)
+
+    def test_message_payload_ucs2_accents2(self):
+        pduHex = '000000a80000000500000000000005c000010133353831323334353637383930000409353531310000000000000000080000000e00010100060001010424006800c000e0002c002000df002c002000e4002c002000e5002c002000e6002c002000e3002c002000f1002c002000e7002c002000e2002c00200153002c00200153002c002000f2002c002000f6002c002000f5002c002000f8002c002000f3002c002000ef002c0020'
+        pdu = self.getPDU(pduHex)
+        smStr = SMStringEncoder().decodeSM(pdu)
+        self.assertEquals('\x00\xc0\x00\xe0\x00,\x00 \x00\xdf\x00,\x00 \x00\xe4\x00,\x00 \x00\xe5\x00,\x00 \x00\xe6\x00,\x00 \x00\xe3\x00,\x00 \x00\xf1\x00,\x00 \x00\xe7\x00,\x00 \x00\xe2\x00,\x00 \x01S\x00,\x00 \x01S\x00,\x00 \x00\xf2\x00,\x00 \x00\xf6\x00,\x00 \x00\xf5\x00,\x00 \x00\xf8\x00,\x00 \x00\xf3\x00,\x00 \x00\xef\x00,\x00 ', smStr.bytes)
+        self.assertEquals(u"\xc0\xe0, \xdf, \xe4, \xe5, \xe6, \xe3, \xf1, \xe7, \xe2, \u0153, \u0153, \xf2, \xf6, \xf5, \xf8, \xf3, \xef, ", smStr.unicode)
+        self.assertEquals(None, smStr.udh)
 
 if __name__ == '__main__':
     unittest.main()
