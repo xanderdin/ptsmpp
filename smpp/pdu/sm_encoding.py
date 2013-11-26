@@ -40,6 +40,8 @@ class SMStringEncoder(object):
                 unicodeStr = unicode(smStrBytes, 'UTF-16BE')
             elif data_coding.schemeData == DataCodingDefault.LATIN_1:
                 unicodeStr = unicode(smStrBytes, 'latin_1')
+            elif data_coding.schemeData == DataCodingDefault.OCTET_UNSPECIFIED_COMMON:
+                unicodeStr = unicode(smStrBytes, 'latin_1', errors='ignore')
             if unicodeStr is not None:
                 return ShortMessageString(smBytes, unicodeStr, udh)
 
