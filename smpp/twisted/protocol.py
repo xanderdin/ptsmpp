@@ -304,11 +304,11 @@ class SMPPProtocolBase( protocol.Protocol ):
             try:
                 error.raiseException()
             except SMPPProtocolError as validation_error:
-                self.log.warning("SMPP Custom Validation error handling inbound PDU [%s] hex[%s]: %s'" % (reqPDU, _safelylogOutPdu(self.encoder.encode(reqPDU)), validation_error))
+                self.log.warning("SMPP Custom Validation error handling inbound PDU [%s] hex[%s]: %s'" % (_safelylogOutPdu(reqPDU), _safelylogOutPdu(self.encoder.encode(reqPDU)), validation_error))
                 return_cmd_status = validation_error.commandStatusName
                 shutdown = False
         else:
-            self.log.critical('Exception raised handling inbound PDU [%s] hex[%s]: %s' % (reqPDU, _safelylogOutPdu(self.encoder.encode(reqPDU)), error))
+            self.log.critical('Exception raised handling inbound PDU [%s] hex[%s]: %s' % (_safelylogOutPdu(reqPDU), _safelylogOutPdu(self.encoder.encode(reqPDU)), error))
             return_cmd_status = CommandStatus.ESME_RX_T_APPN
             shutdown = True
 
