@@ -30,27 +30,38 @@ class SMStringEncoder(object):
         (smBytes, udhBytes, smStrBytes) = self.splitSM(pdu)
         udh = self.decodeUDH(udhBytes)
 
-        if data_coding.scheme == DataCodingScheme.DEFAULT:
-            unicodeStr = None
-            if data_coding.schemeData == DataCodingDefault.SMSC_DEFAULT_ALPHABET:
-                unicodeStr = unicode(smStrBytes, smsc_default_alphabet_encoding)
-            elif data_coding.schemeData == DataCodingDefault.IA5_ASCII:
-                unicodeStr = unicode(smStrBytes, 'ascii')
-            elif data_coding.schemeData == DataCodingDefault.UCS2:
-                unicodeStr = unicode(smStrBytes, 'UTF-16BE')
-            elif data_coding.schemeData == DataCodingDefault.LATIN_1:
-                unicodeStr = unicode(smStrBytes, 'latin_1')
-            elif data_coding.schemeData == DataCodingDefault.OCTET_UNSPECIFIED_COMMON:
+        try:
+            if data_coding.scheme == DataCodingScheme.DEFAULT:
+                unicodeStr = None
+                if data_coding.schemeData == DataCodingDefault.SMSC_DEFAULT_ALPHABET:
+                    unicodeStr = unicode(smStrBytes, smsc_default_alphabet_encoding)
+                elif data_coding.schemeData == DataCodingDefault.IA5_ASCII:
+                    unicodeStr = unicode(smStrBytes, 'ascii')
+                elif data_coding.schemeData == DataCodingDefault.UCS2:
+                    unicodeStr = unicode(smStrBytes, 'UTF-16BE')
+                elif data_coding.schemeData == DataCodingDefault.LATIN_1:
+                    unicodeStr = unicode(smStrBytes, 'latin_1')
+                elif data_coding.schemeData == DataCodingDefault.OCTET_UNSPECIFIED_COMMON:
+                    unicodeStr = unicode(smStrBytes, 'latin_1', errors='ignore')
+                if unicodeStr is not None:
+                    return ShortMessageString(smBytes, unicodeStr, udh)
+
+            if data_coding.scheme == DataCodingScheme.GSM_MESSAGE_CLASS or \
+                    data_coding.scheme == DataCodingScheme.RAW:
+                unicodeStr = unicode(smStrBytes, 'ascii', errors='ignore')
+
+                if unicodeStr is not None:
+                    return ShortMessageString(smBytes, unicodeStr, udh)
+        except UnicodeDecodeError as e:
+            # Some SMSCs send delivery reports with the wrong encoding.
+            # Let's try to decode with latin-1 in that case.
+            if pdu.params['esm_class'].type == \
+                    EsmClassType.SMSC_DELIVERY_RECEIPT:
                 unicodeStr = unicode(smStrBytes, 'latin_1', errors='ignore')
-            if unicodeStr is not None:
-                return ShortMessageString(smBytes, unicodeStr, udh)
+                if unicodeStr is not None:
+                    return ShortMessageString(smBytes, unicodeStr, udh)
 
-        if data_coding.scheme == DataCodingScheme.GSM_MESSAGE_CLASS or \
-                data_coding.scheme == DataCodingScheme.RAW:
-            unicodeStr = unicode(smStrBytes, 'ascii', errors='ignore')
-
-            if unicodeStr is not None:
-                return ShortMessageString(smBytes, unicodeStr, udh)
+            raise e
 
         raise NotImplementedError("I don't know what to do!!! Data coding %s" % str(data_coding))
 
