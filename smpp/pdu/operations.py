@@ -255,6 +255,8 @@ class DeliverSM(PDUDataRequest):
         # to the DELIVER_SM PDU even though it's against the SMPP spec
         'source_network_type',
         'dest_network_type',
+        # More SMSC strangeness
+        'more_messages_to_send',
     ]
 
 class DataSMResp(PDUResponse):
