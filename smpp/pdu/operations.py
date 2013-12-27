@@ -257,6 +257,7 @@ class DeliverSM(PDUDataRequest):
         'dest_network_type',
         # More SMSC strangeness
         'more_messages_to_send',
+        'dest_addr_subunit',
     ]
 
 class DataSMResp(PDUResponse):

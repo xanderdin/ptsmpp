@@ -621,5 +621,11 @@ class PDUEncoderTest(EncoderTest):
 
         self.assertEquals(pdu.params['more_messages_to_send'], MoreMessagesToSend.MORE_MESSAGES)
 
+    def test_deliver_sm_with_dest_addr_subunit_optional_param(self):
+        pduHex = '0000004800000005000000000000112e00010131323334353637383930313233000409313233340000000000000000000000000e0001010006000101042400035965730005000102'
+        pdu = PDUEncoder().decode(StringIO.StringIO(binascii.a2b_hex(pduHex)))
+
+        self.assertEquals(pdu.params['dest_addr_subunit'], AddrSubunit.MOBILE_EQUIPMENT)
+
 if __name__ == '__main__':
     unittest.main()
