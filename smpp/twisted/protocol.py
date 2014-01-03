@@ -211,12 +211,7 @@ class SMPPProtocolBase( protocol.Protocol ):
         """Dispatches incoming PDUs
         """
         if self.log.isEnabledFor(logging.DEBUG):
-            self.log.debug("Received PDU: %s" % pdu)
-
-        encoded = self.encoder.encode(pdu)
-
-        if self.log.isEnabledFor(logging.DEBUG):
-            self.log.debug("Receiving data [%s]" % _safelylogOutPdu(encoded))
+            self.log.debug("Received PDU hex[%s]: %s" % (pdu.raw_hex, pdu))
 
         #Signal SMPP operation
         self.onSMPPOperation()
