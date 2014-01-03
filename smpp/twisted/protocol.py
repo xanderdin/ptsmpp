@@ -91,7 +91,8 @@ class SMPPProtocolBase( protocol.Protocol ):
         """
         protocol.Protocol.connectionMade(self)
         self.port = self.transport.getHost().port
-
+        #Start the inactivity timer the connection is dropped if we receive no data
+        self.activateInactivityTimer()
         self.sessionState = SMPPSessionStates.OPEN
         self.log.warning("SMPP connection established from %s to port %s", self.transport.getPeer().host, self.port)
 
@@ -299,7 +300,7 @@ class SMPPProtocolBase( protocol.Protocol ):
             try:
                 error.raiseException()
             except SMPPProtocolError as validation_error:
-                self.log.warning("SMPP Custom Validation error handling inbound PDU [%s] hex[%s]: %s'" % (_safelylogOutPdu(reqPDU), _safelylogOutPdu(self.encoder.encode(reqPDU)), validation_error))
+                self.log.debug("Application raised error '%s', forwarding to client. Inbound PDU was [%s], hex[%s]" % (validation_error, _safelylogOutPdu(reqPDU), _safelylogOutPdu(self.encoder.encode(reqPDU))))
                 return_cmd_status = validation_error.commandStatusName
                 shutdown = False
         else:
@@ -735,9 +736,9 @@ class SMPPServerProtocol(SMPPProtocolBase):
         self.shutdown()
 
     def connectionLost(self, reason):
-        SMPPProtocolBase.connectionLost(self, reason)
         # Remove this connection from those stored in the factory
         self.factory.removeConnection(self)
+        SMPPProtocolBase.connectionLost(self, reason)
 
     def PDUReceived( self, pdu ):
         """Dispatches incoming PDUs
