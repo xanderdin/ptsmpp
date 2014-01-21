@@ -160,7 +160,6 @@ class PDU(object):
         r = "PDU [command: %s, sequence_number: %s, command_status: %s" % (self.id, self.seqNum, self.status)
         for mParam in self.mandatoryParams:
             if mParam in self.params:
-                r += "\n%s: %s" % (mParam, self.params[mParam])
                 if mParam == 'short_message':
                     r += "\n%s: %s" % (mParam, repr(self.params[mParam]))
                 else:
