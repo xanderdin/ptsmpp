@@ -152,13 +152,26 @@ class PDU(object):
                 self.params[mParam] = None
 
     def __repr__(self):
+        """Dump contents of the PDU
+
+        short_message or message_payload can contain UTF-16 data so we just
+        use repr there.
+        """
         r = "PDU [command: %s, sequence_number: %s, command_status: %s" % (self.id, self.seqNum, self.status)
         for mParam in self.mandatoryParams:
             if mParam in self.params:
                 r += "\n%s: %s" % (mParam, self.params[mParam])
+                if mParam == 'short_message':
+                    r += "\n%s: %s" % (mParam, repr(self.params[mParam]))
+                else:
+                    r += "\n%s: %s" % (mParam, self.params[mParam])
+
         for oParam in self.params.keys():
             if oParam not in self.mandatoryParams:
-                r += "\n%s: %s" % (oParam, self.params[oParam])
+                if oParam == 'message_payload':
+                    r += "\n%s: %s" % (oParam, repr(self.params[oParam]))
+                else:
+                    r += "\n%s: %s" % (oParam, self.params[oParam])
         r += '\n]'
         return r
 
