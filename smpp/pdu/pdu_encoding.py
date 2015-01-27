@@ -800,7 +800,9 @@ class OptionEncoder(IEncoder):
             if tag.key.startswith('vendor_specific_'):
                 self.options[tag] = OctetStringEncoder(self.getLength)
             else:
-                raise PDUParseError("Optional param %s unknown" % tag, pdu_types.CommandStatus.ESME_ROPTPARNOTALLWD)
+                # read unconsumed data
+                file.read(self.length)
+                return
         encoder = self.options[tag]
         iBeforeDecode = file.tell()
 
@@ -988,9 +990,15 @@ class PDUEncoder(IEncoder):
         iBefore = file.tell()
         while file.tell() - iBefore < optionsLength:
             option = self.optionEncoder.decode(file)
+            if option is None:
+                continue
             optionName = str(option.tag)
             if optionName not in paramList and not optionName.startswith('vendor_specific_'):
-                raise PDUParseError("Invalid option %s" % optionName, pdu_types.CommandStatus.ESME_ROPTPARNOTALLWD)
+                # SMPP Protocol Specification v3.4. Guidelines for SMPP Forward Compatibility:
+                # If the Optional Parameter Tag is unrecognized or unsupported by the receiving SMPP
+                # entity, that particular Optional Parameter shall be ignored and the next Optional
+                # Parameter in the sequence shall be processed.
+                continue
             optionalParams[optionName] = option.value
         return optionalParams
 

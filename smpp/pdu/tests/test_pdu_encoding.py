@@ -627,5 +627,12 @@ class PDUEncoderTest(EncoderTest):
 
         self.assertEquals(pdu.params['dest_addr_subunit'], AddrSubunit.MOBILE_EQUIPMENT)
 
+    def test_deliver_sm_with_unsupported_optional_param(self):
+        pduHex = '0000004d000000050000000000000004000101343437373636353534300001013739323231313136333836000000000000000000001248656c6c6f2066726f6d20534d505053696d0501000101'
+        pdu = PDUEncoder().decode(StringIO.StringIO(binascii.a2b_hex(pduHex)))
+
+        self.assertFalse('ussd_service_op' in pdu.params)
+
+
 if __name__ == '__main__':
     unittest.main()
