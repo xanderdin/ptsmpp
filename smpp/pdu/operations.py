@@ -15,11 +15,13 @@ Copyright 2009-2010 Mozes, Inc.
 """
 from smpp.pdu.pdu_types import CommandId, PDU, PDURequest, PDUResponse, PDUDataRequest
 
+
 class BindTransmitterResp(PDUResponse):
     noBodyOnError = True
     commandId = CommandId.bind_transmitter_resp
     mandatoryParams = ['system_id']
     optionalParams = ['sc_interface_version']
+
 
 class BindTransmitter(PDURequest):
     requireAck = BindTransmitterResp
@@ -34,11 +36,13 @@ class BindTransmitter(PDURequest):
         'address_range',
     ]
 
+
 class BindReceiverResp(PDUResponse):
     noBodyOnError = True
     commandId = CommandId.bind_receiver_resp
     mandatoryParams = ['system_id']
     optionalParams = ['sc_interface_version']
+
 
 class BindReceiver(PDURequest):
     requireAck = BindReceiverResp
@@ -53,11 +57,13 @@ class BindReceiver(PDURequest):
         'address_range',
     ]
 
+
 class BindTransceiverResp(PDUResponse):
     noBodyOnError = True
     commandId = CommandId.bind_transceiver_resp
     mandatoryParams = ['system_id']
     optionalParams = ['sc_interface_version']
+
 
 class BindTransceiver(PDURequest):
     requireAck = BindTransceiverResp
@@ -72,6 +78,7 @@ class BindTransceiver(PDURequest):
         'address_range',
     ]
 
+
 class Outbind(PDU):
     commandId = CommandId.outbind
     mandatoryParams = [
@@ -79,20 +86,25 @@ class Outbind(PDU):
         'password',
     ]
 
+
 class UnbindResp(PDUResponse):
     commandId = CommandId.unbind_resp
+
 
 class Unbind(PDURequest):
     requireAck = UnbindResp
     commandId = CommandId.unbind
 
+
 class GenericNack(PDUResponse):
     commandId = CommandId.generic_nack
+
 
 class SubmitSMResp(PDUResponse):
     noBodyOnError = True
     commandId = CommandId.submit_sm_resp
     mandatoryParams = ['message_id']
+
 
 class SubmitSM(PDUDataRequest):
     requireAck = SubmitSMResp
@@ -114,7 +126,7 @@ class SubmitSM(PDUDataRequest):
         'replace_if_present_flag',
         'data_coding',
         'sm_default_msg_id',
-        #The sm_length parameter is handled by ShortMessageEncoder
+        # The sm_length parameter is handled by ShortMessageEncoder
         'short_message',
     ]
     optionalParams = [
@@ -148,6 +160,7 @@ class SubmitSM(PDUDataRequest):
         'ussd_service_op',
     ]
 
+
 class SubmitMultiResp(PDUResponse):
     commandId = CommandId.submit_multi_resp
     mandatoryParams = [
@@ -155,6 +168,7 @@ class SubmitMultiResp(PDUResponse):
         'no_unsuccess',
         'no_unsuccess_sme',
     ]
+
 
 class SubmitMulti(PDUDataRequest):
     requireAck = SubmitMultiResp
@@ -175,7 +189,7 @@ class SubmitMulti(PDUDataRequest):
         'replace_if_present_flag',
         'data_coding',
         'sm_default_msg_id',
-        #The sm_length parameter is handled by ShortMessageEncoder
+        # The sm_length parameter is handled by ShortMessageEncoder
         'short_message',
     ]
     optionalParams = [
@@ -205,9 +219,11 @@ class SubmitMulti(PDUDataRequest):
         'language_indicator',
     ]
 
+
 class DeliverSMResp(PDUResponse):
     commandId = CommandId.deliver_sm_resp
     mandatoryParams = ['message_id']
+
 
 class DeliverSM(PDUDataRequest):
     requireAck = DeliverSMResp
@@ -229,7 +245,7 @@ class DeliverSM(PDUDataRequest):
         'replace_if_present_flag',
         'data_coding',
         'sm_default_msg_id',
-        #The sm_length parameter is handled by ShortMessageEncoder
+        # The sm_length parameter is handled by ShortMessageEncoder
         'short_message',
     ]
     optionalParams = [
@@ -260,6 +276,7 @@ class DeliverSM(PDUDataRequest):
         'dest_addr_subunit',
     ]
 
+
 class DataSMResp(PDUResponse):
     commandId = CommandId.data_sm_resp
     mandatoryParams = ['message_id']
@@ -269,6 +286,7 @@ class DataSMResp(PDUResponse):
         'additional_status_info_text',
         'dpf_result',
     ]
+
 
 class DataSM(PDUDataRequest):
     requireAck = DataSMResp
@@ -326,6 +344,7 @@ class DataSM(PDUDataRequest):
         'its_session_info',
     ]
 
+
 class QuerySMResp(PDUResponse):
     commandId = CommandId.query_sm_resp
     mandatoryParams = [
@@ -334,6 +353,7 @@ class QuerySMResp(PDUResponse):
         'message_state',
         'error_code',
     ]
+
 
 class QuerySM(PDUDataRequest):
     requireAck = QuerySMResp
@@ -345,8 +365,10 @@ class QuerySM(PDUDataRequest):
         'source_addr',
     ]
 
+
 class CancelSMResp(PDUResponse):
     commandId = CommandId.cancel_sm_resp
+
 
 class CancelSM(PDUDataRequest):
     requireAck = CancelSMResp
@@ -362,8 +384,10 @@ class CancelSM(PDUDataRequest):
         'destination_addr',
     ]
 
+
 class ReplaceSMResp(PDUResponse):
     commandId = CommandId.replace_sm_resp
+
 
 class ReplaceSM(PDUDataRequest):
     requireAck = ReplaceSMResp
@@ -381,12 +405,15 @@ class ReplaceSM(PDUDataRequest):
         'short_message',
     ]
 
+
 class EnquireLinkResp(PDUResponse):
     commandId = CommandId.enquire_link_resp
+
 
 class EnquireLink(PDURequest):
     requireAck = EnquireLinkResp
     commandId = CommandId.enquire_link
+
 
 class AlertNotification(PDU):
     commandId = CommandId.alert_notification
@@ -404,15 +431,17 @@ class AlertNotification(PDU):
 
 PDUS = {}
 
+
 def _register():
-  for pduKlass in globals().values():
-      try:
-          if issubclass(pduKlass, PDU):
-              PDUS[pduKlass.commandId] = pduKlass
-      except TypeError:
-          pass
+    for pduKlass in globals().values():
+        try:
+            if issubclass(pduKlass, PDU):
+                PDUS[pduKlass.commandId] = pduKlass
+        except TypeError:
+            pass
 
 _register()
+
 
 def getPDUClass(commandId):
     return PDUS[commandId]

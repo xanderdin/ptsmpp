@@ -14,10 +14,10 @@ Copyright 2009-2010 Mozes, Inc.
    limitations under the License.
 """
 
-#http://www.3gpp.org/ftp/Specs/html-info/23040.htm
-#http://www.3gpp.org/ftp/Specs/archive/23_series/23.040/23040-100.zip
-#only defining SMS control constants (only some of those for that matter)
-#assuming that only non-repeatable parameters can be mutually exclusive
+# http://www.3gpp.org/ftp/Specs/html-info/23040.htm
+# http://www.3gpp.org/ftp/Specs/archive/23_series/23.040/23040-100.zip
+# only defining SMS control constants (only some of those for that matter)
+# assuming that only non-repeatable parameters can be mutually exclusive
 information_element_identifier_full_value_map = {
     0x00: {
         'name': 'CONCATENATED_SM_8BIT_REF_NUM',
@@ -88,5 +88,7 @@ information_element_identifier_full_value_map = {
         'excludes': [],
     },
 }
-information_element_identifier_name_map = dict([(val['name'], key) for (key, val) in information_element_identifier_full_value_map.items()])
-information_element_identifier_value_map = dict([(val, key) for (key, val) in information_element_identifier_name_map.items()])
+information_element_identifier_name_map = dict([(val['name'], key) for (
+    key, val) in information_element_identifier_full_value_map.items()])
+information_element_identifier_value_map = dict(
+    [(val, key) for (key, val) in information_element_identifier_name_map.items()])

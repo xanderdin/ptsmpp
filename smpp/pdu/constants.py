@@ -14,201 +14,202 @@ Copyright 2009-2010 Mozes, Inc.
    limitations under the License.
 """
 command_status_value_map = {
-    0x00000000L : {
-        'name' : 'ESME_ROK',
-        'description' : 'No error',
+    0x00000000L: {
+        'name': 'ESME_ROK',
+        'description': 'No error',
     },
-    0x00000001L : {
-        'name' : 'ESME_RINVMSGLEN',
+    0x00000001L: {
+        'name': 'ESME_RINVMSGLEN',
         'description': 'Message Length is invalid',
     },
-    0x00000002L : {
-        'name' : 'ESME_RINVCMDLEN',
+    0x00000002L: {
+        'name': 'ESME_RINVCMDLEN',
         'description': 'Command Length is invalid',
     },
-    0x00000003L : {
-        'name' : 'ESME_RINVCMDID',
+    0x00000003L: {
+        'name': 'ESME_RINVCMDID',
         'description': 'Invalid Command ID',
     },
-    0x00000004L : {
-        'name' : 'ESME_RINVBNDSTS',
+    0x00000004L: {
+        'name': 'ESME_RINVBNDSTS',
         'description': 'Invalid BIND Status for given command',
     },
-    0x00000005L : {
-        'name' : 'ESME_RALYBND',
+    0x00000005L: {
+        'name': 'ESME_RALYBND',
         'description': 'ESME Already in Bound State',
     },
-    0x00000006L : {
-        'name' : 'ESME_RINVPRTFLG',
+    0x00000006L: {
+        'name': 'ESME_RINVPRTFLG',
         'description': 'Invalid Priority Flag',
     },
-    0x00000007L : {
-        'name' : 'ESME_RINVREGDLVFLG',
+    0x00000007L: {
+        'name': 'ESME_RINVREGDLVFLG',
         'description': 'Invalid Registered Delivery Flag',
     },
-    0x00000008L : {
-        'name' : 'ESME_RSYSERR',
+    0x00000008L: {
+        'name': 'ESME_RSYSERR',
         'description': 'System Error',
     },
-    0x0000000AL : {
-        'name' : 'ESME_RINVSRCADR',
+    0x0000000AL: {
+        'name': 'ESME_RINVSRCADR',
         'description': 'Invalid Source Address',
     },
-    0x0000000BL : {
-        'name' : 'ESME_RINVDSTADR',
+    0x0000000BL: {
+        'name': 'ESME_RINVDSTADR',
         'description': 'Invalid Dest Addr',
     },
-    0x0000000CL : {
-        'name' : 'ESME_RINVMSGID',
+    0x0000000CL: {
+        'name': 'ESME_RINVMSGID',
         'description': 'Message ID is invalid',
     },
-    0x0000000DL : {
-        'name' : 'ESME_RBINDFAIL',
+    0x0000000DL: {
+        'name': 'ESME_RBINDFAIL',
         'description': 'Bind Failed',
     },
-    0x0000000EL : {
-        'name' : 'ESME_RINVPASWD',
+    0x0000000EL: {
+        'name': 'ESME_RINVPASWD',
         'description': 'Invalid Password',
     },
-    0x0000000FL : {
-        'name' : 'ESME_RINVSYSID',
+    0x0000000FL: {
+        'name': 'ESME_RINVSYSID',
         'description': 'Invalid System ID',
     },
-    0x00000011L : {
-        'name' : 'ESME_RCANCELFAIL',
+    0x00000011L: {
+        'name': 'ESME_RCANCELFAIL',
         'description': 'Cancel SM Failed',
     },
-    0x00000013L : {
-        'name' : 'ESME_RREPLACEFAIL',
+    0x00000013L: {
+        'name': 'ESME_RREPLACEFAIL',
         'description': 'Replace SM Failed',
     },
-    0x00000014L : {
-        'name' : 'ESME_RMSGQFUL',
+    0x00000014L: {
+        'name': 'ESME_RMSGQFUL',
         'description': 'Message Queue Full',
     },
-    0x00000015L : {
-        'name' : 'ESME_RINVSERTYP',
+    0x00000015L: {
+        'name': 'ESME_RINVSERTYP',
         'description': 'Invalid Service Type',
     },
-    0x00000033L : {
-        'name' : 'ESME_RINVNUMDESTS',
+    0x00000033L: {
+        'name': 'ESME_RINVNUMDESTS',
         'description': 'Invalid number of destinations',
     },
-    0x00000034L : {
-        'name' : 'ESME_RINVDLNAME',
+    0x00000034L: {
+        'name': 'ESME_RINVDLNAME',
         'description': 'Invalid Distribution List Name',
     },
-    0x00000040L : {
-        'name' : 'ESME_RINVDESTFLAG',
+    0x00000040L: {
+        'name': 'ESME_RINVDESTFLAG',
         'description': 'Destination flag is invalid (submit_multi)',
     },
-    0x00000042L : {
-        'name' : 'ESME_RINVSUBREP',
+    0x00000042L: {
+        'name': 'ESME_RINVSUBREP',
         'description': 'Invalid submit with replace request (i.e.  submit_sm with replace_if_present_flag set)',
     },
-    0x00000043L : {
-        'name' : 'ESME_RINVESMCLASS',
+    0x00000043L: {
+        'name': 'ESME_RINVESMCLASS',
         'description': 'Invalid esm_class field data',
     },
-    0x00000044L : {
-        'name' : 'ESME_RCNTSUBDL',
+    0x00000044L: {
+        'name': 'ESME_RCNTSUBDL',
         'description': 'Cannot Submit to Distribution List',
     },
-    0x00000045L : {
-        'name' : 'ESME_RSUBMITFAIL',
+    0x00000045L: {
+        'name': 'ESME_RSUBMITFAIL',
         'description': 'submit_sm or submit_multi failed',
     },
-    0x00000048L : {
-        'name' : 'ESME_RINVSRCTON',
+    0x00000048L: {
+        'name': 'ESME_RINVSRCTON',
         'description': 'Invalid Source address TON',
     },
-    0x00000049L : {
-        'name' : 'ESME_RINVSRCNPI',
+    0x00000049L: {
+        'name': 'ESME_RINVSRCNPI',
         'description': 'Invalid Source address NPI',
     },
-    0x00000050L : {
-        'name' : 'ESME_RINVDSTTON',
+    0x00000050L: {
+        'name': 'ESME_RINVDSTTON',
         'description': 'Invalid Destination address TON',
     },
-    0x00000051L : {
-        'name' : 'ESME_RINVDSTNPI',
+    0x00000051L: {
+        'name': 'ESME_RINVDSTNPI',
         'description': 'Invalid Destination address NPI',
     },
-    0x00000053L : {
-        'name' : 'ESME_RINVSYSTYP',
+    0x00000053L: {
+        'name': 'ESME_RINVSYSTYP',
         'description': 'Invalid system_type field',
     },
-    0x00000054L : {
-        'name' : 'ESME_RINVREPFLAG',
+    0x00000054L: {
+        'name': 'ESME_RINVREPFLAG',
         'description': 'Invalid replace_if_present flag',
     },
-    0x00000055L : {
-        'name' : 'ESME_RINVNUMMSGS',
+    0x00000055L: {
+        'name': 'ESME_RINVNUMMSGS',
         'description': 'Invalid number of messages',
     },
-    0x00000058L : {
-        'name' : 'ESME_RTHROTTLED',
+    0x00000058L: {
+        'name': 'ESME_RTHROTTLED',
         'description': 'Throttling error (ESME has exceeded allowed message limits',
     },
-    0x00000061L : {
-        'name' : 'ESME_RINVSCHED',
+    0x00000061L: {
+        'name': 'ESME_RINVSCHED',
         'description': 'Invalid Scheduled Delivery Time',
     },
-    0x00000062L : {
-        'name' : 'ESME_RINVEXPIRY',
+    0x00000062L: {
+        'name': 'ESME_RINVEXPIRY',
         'description': 'Invalid message validity period (Expiry time)',
     },
-    0x00000063L : {
-        'name' : 'ESME_RINVDFTMSGID',
+    0x00000063L: {
+        'name': 'ESME_RINVDFTMSGID',
         'description': 'Predefined Message Invalid or Not Found',
     },
-    0x00000064L : {
-        'name' : 'ESME_RX_T_APPN',
+    0x00000064L: {
+        'name': 'ESME_RX_T_APPN',
         'description': 'ESME Receiver Temporary App Error Code',
     },
-    0x00000065L : {
-        'name' : 'ESME_RX_P_APPN',
+    0x00000065L: {
+        'name': 'ESME_RX_P_APPN',
         'description': 'ESME Receiver Permanent App Error Code',
     },
-    0x00000066L : {
-        'name' : 'ESME_RX_R_APPN',
+    0x00000066L: {
+        'name': 'ESME_RX_R_APPN',
         'description': 'ESME Receiver Reject Message Error Code',
     },
-    0x00000067L : {
-        'name' : 'ESME_RQUERYFAIL',
+    0x00000067L: {
+        'name': 'ESME_RQUERYFAIL',
         'description': 'query_sm request failed',
     },
-    0x000000C0L : {
-        'name' : 'ESME_RINVOPTPARSTREAM',
+    0x000000C0L: {
+        'name': 'ESME_RINVOPTPARSTREAM',
         'description': 'Error in the optional part of the PDU Body',
     },
-    0x000000C1L : {
-        'name' : 'ESME_ROPTPARNOTALLWD',
+    0x000000C1L: {
+        'name': 'ESME_ROPTPARNOTALLWD',
         'description': 'Optional Parameter not allowed',
     },
-    0x000000C2L : {
-        'name' : 'ESME_RINVPARLEN',
+    0x000000C2L: {
+        'name': 'ESME_RINVPARLEN',
         'description': 'Invalid Parameter Length',
     },
-    0x000000C3L : {
-        'name' : 'ESME_RMISSINGOPTPARAM',
+    0x000000C3L: {
+        'name': 'ESME_RMISSINGOPTPARAM',
         'description': 'Expected Optional Parameter missing',
     },
-    0x000000C4L : {
-        'name' : 'ESME_RINVOPTPARAMVAL',
+    0x000000C4L: {
+        'name': 'ESME_RINVOPTPARAMVAL',
         'description': 'Invalid Optional Parameter Value',
     },
-    0x000000FEL : {
-        'name' : 'ESME_RDELIVERYFAILURE',
+    0x000000FEL: {
+        'name': 'ESME_RDELIVERYFAILURE',
         'description': 'Delivery Failure (used for data_sm_resp)',
     },
-    0x000000FFL : {
-        'name' : 'ESME_RUNKNOWNERR',
+    0x000000FFL: {
+        'name': 'ESME_RUNKNOWNERR',
         'description': 'Unknown Error',
     },
 }
 
-command_status_name_map = dict([(val['name'], key) for (key, val) in command_status_value_map.items()])
+command_status_name_map = dict(
+    [(val['name'], key) for (key, val) in command_status_value_map.items()])
 
 command_id_name_map = {
     'generic_nack': 0x80000000,
@@ -240,7 +241,8 @@ command_id_name_map = {
     'data_sm_resp': 0x80000103,
 }
 
-command_id_value_map = dict([(val, key) for (key, val) in command_id_name_map.items()])
+command_id_value_map = dict([(val, key)
+                             for (key, val) in command_id_name_map.items()])
 
 tag_name_map = {
     'dest_addr_subunit': 0x0005,
@@ -301,7 +303,8 @@ esm_class_mode_name_map = {
     'FORWARD': 0x2,
     'STORE_AND_FORWARD': 0x3,
 }
-esm_class_mode_value_map = dict([(val, key) for (key, val) in esm_class_mode_name_map.items()])
+esm_class_mode_value_map = dict(
+    [(val, key) for (key, val) in esm_class_mode_name_map.items()])
 
 esm_class_type_name_map = {
     'DEFAULT': 0x00,
@@ -311,26 +314,30 @@ esm_class_type_name_map = {
     'CONVERSATION_ABORT': 0x18,
     'INTERMEDIATE_DELIVERY_NOTIFICATION': 0x20,
 }
-esm_class_type_value_map = dict([(val, key) for (key, val) in esm_class_type_name_map.items()])
+esm_class_type_value_map = dict(
+    [(val, key) for (key, val) in esm_class_type_name_map.items()])
 
 esm_class_gsm_features_name_map = {
     'UDHI_INDICATOR_SET': 0x40,
     'SET_REPLY_PATH': 0x80,
 }
-esm_class_gsm_features_value_map = dict([(val, key) for (key, val) in esm_class_gsm_features_name_map.items()])
+esm_class_gsm_features_value_map = dict(
+    [(val, key) for (key, val) in esm_class_gsm_features_name_map.items()])
 
 registered_delivery_receipt_name_map = {
     'NO_SMSC_DELIVERY_RECEIPT_REQUESTED': 0x00,
     'SMSC_DELIVERY_RECEIPT_REQUESTED': 0x01,
     'SMSC_DELIVERY_RECEIPT_REQUESTED_FOR_FAILURE': 0x02,
 }
-registered_delivery_receipt_value_map = dict([(val, key) for (key, val) in registered_delivery_receipt_name_map.items()])
+registered_delivery_receipt_value_map = dict(
+    [(val, key) for (key, val) in registered_delivery_receipt_name_map.items()])
 
 registered_delivery_sme_originated_acks_name_map = {
     'SME_DELIVERY_ACK_REQUESTED': 0x04,
     'SME_MANUAL_ACK_REQUESTED': 0x08,
 }
-registered_delivery_sme_originated_acks_value_map = dict([(val, key) for (key, val) in registered_delivery_sme_originated_acks_name_map.items()])
+registered_delivery_sme_originated_acks_value_map = dict([(val, key) for (
+    key, val) in registered_delivery_sme_originated_acks_name_map.items()])
 
 addr_subunit_name_map = {
     'UNKNOWN': 0x00,
@@ -339,7 +346,8 @@ addr_subunit_name_map = {
     'SMART_CARD_1': 0x3,
     'EXTERNAL_UNIT_1': 0x4,
 }
-addr_subunit_value_map = dict([(val, key) for (key, val) in addr_subunit_name_map.items()])
+addr_subunit_value_map = dict(
+    [(val, key) for (key, val) in addr_subunit_name_map.items()])
 
 addr_ton_name_map = {
     'UNKNOWN': 0x00,
@@ -350,7 +358,8 @@ addr_ton_name_map = {
     'ALPHANUMERIC': 0x05,
     'ABBREVIATED': 0x06,
 }
-addr_ton_value_map = dict([(val, key) for (key, val) in addr_ton_name_map.items()])
+addr_ton_value_map = dict([(val, key)
+                           for (key, val) in addr_ton_name_map.items()])
 
 addr_npi_name_map = {
     'UNKNOWN': 0x00,
@@ -364,7 +373,8 @@ addr_npi_name_map = {
     'INTERNET': 0x0e,
     'WAP_CLIENT_ID': 0x12,
 }
-addr_npi_value_map = dict([(val, key) for (key, val) in addr_npi_name_map.items()])
+addr_npi_value_map = dict([(val, key)
+                           for (key, val) in addr_npi_name_map.items()])
 
 priority_flag_name_map = {
     'LEVEL_0': 0x00,
@@ -372,24 +382,28 @@ priority_flag_name_map = {
     'LEVEL_2': 0x02,
     'LEVEL_3': 0x03,
 }
-priority_flag_value_map = dict([(val, key) for (key, val) in priority_flag_name_map.items()])
+priority_flag_value_map = dict(
+    [(val, key) for (key, val) in priority_flag_name_map.items()])
 
 replace_if_present_flap_name_map = {
     'DO_NOT_REPLACE': 0x00,
     'REPLACE': 0x01,
 }
-replace_if_present_flap_value_map = dict([(val, key) for (key, val) in replace_if_present_flap_name_map.items()])
+replace_if_present_flap_value_map = dict(
+    [(val, key) for (key, val) in replace_if_present_flap_name_map.items()])
 
 more_messages_to_send_name_map = {
     'NO_MORE_MESSAGES': 0x00,
     'MORE_MESSAGES': 0x01,
 }
-more_messages_to_send_value_map = dict([(val, key) for (key, val) in more_messages_to_send_name_map.items()])
+more_messages_to_send_value_map = dict(
+    [(val, key) for (key, val) in more_messages_to_send_name_map.items()])
 
 data_coding_scheme_name_map = {
     'GSM_MESSAGE_CLASS': 0xf0,
 }
-data_coding_scheme_value_map = dict([(val, key) for (key, val) in data_coding_scheme_name_map.items()])
+data_coding_scheme_value_map = dict(
+    [(val, key) for (key, val) in data_coding_scheme_name_map.items()])
 
 data_coding_default_name_map = {
     'SMSC_DEFAULT_ALPHABET': 0x00,
@@ -406,13 +420,15 @@ data_coding_default_name_map = {
     'EXTENDED_KANJI_JIS': 0x0d,
     'KS_C_5601': 0x0e,
 }
-data_coding_default_value_map = dict([(val, key) for (key, val) in data_coding_default_name_map.items()])
+data_coding_default_value_map = dict(
+    [(val, key) for (key, val) in data_coding_default_name_map.items()])
 
 data_coding_gsm_message_coding_name_map = {
     'DEFAULT_ALPHABET': 0x00,
     'DATA_8BIT': 0x04,
 }
-data_coding_gsm_message_coding_value_map = dict([(val, key) for (key, val) in data_coding_gsm_message_coding_name_map.items()])
+data_coding_gsm_message_coding_value_map = dict(
+    [(val, key) for (key, val) in data_coding_gsm_message_coding_name_map.items()])
 
 data_coding_gsm_message_class_name_map = {
     'NO_MESSAGE_CLASS': 0x00,
@@ -420,13 +436,15 @@ data_coding_gsm_message_class_name_map = {
     'CLASS_2': 0x02,
     'CLASS_3': 0x03,
 }
-data_coding_gsm_message_class_value_map = dict([(val, key) for (key, val) in data_coding_gsm_message_class_name_map.items()])
+data_coding_gsm_message_class_value_map = dict(
+    [(val, key) for (key, val) in data_coding_gsm_message_class_name_map.items()])
 
 dest_flag_name_map = {
     'SME_ADDRESS': 0x01,
     'DISTRIBUTION_LIST_NAME': 0x02,
 }
-dest_flag_value_map = dict([(val, key) for (key, val) in dest_flag_name_map.items()])
+dest_flag_value_map = dict([(val, key)
+                            for (key, val) in dest_flag_name_map.items()])
 
 message_state_name_map = {
     'ENROUTE': 0x01,
@@ -438,27 +456,31 @@ message_state_name_map = {
     'UNKNOWN': 0x07,
     'REJECTED': 0x08,
 }
-message_state_value_map = dict([(val, key) for (key, val) in message_state_name_map.items()])
+message_state_value_map = dict(
+    [(val, key) for (key, val) in message_state_name_map.items()])
 
 callback_num_digit_mode_indicator_name_map = {
     'TBCD': 0x00,
     'ASCII': 0x01,
 }
-callback_num_digit_mode_indicator_value_map = dict([(val, key) for (key, val) in callback_num_digit_mode_indicator_name_map.items()])
+callback_num_digit_mode_indicator_value_map = dict(
+    [(val, key) for (key, val) in callback_num_digit_mode_indicator_name_map.items()])
 
 subaddress_type_tag_name_map = {
     'NSAP_EVEN': 0x80,
     'NSAP_ODD': 0x88,
     'USER_SPECIFIED': 0xa0,
 }
-subaddress_type_tag_value_map = dict([(val, key) for (key, val) in subaddress_type_tag_name_map.items()])
+subaddress_type_tag_value_map = dict(
+    [(val, key) for (key, val) in subaddress_type_tag_name_map.items()])
 
 ms_availability_status_name_map = {
     'AVAILABLE': 0x00,
     'DENIED': 0x01,
     'UNAVAILABLE': 0x02,
 }
-ms_availability_status_value_map = dict([(val, key) for (key, val) in ms_availability_status_name_map.items()])
+ms_availability_status_value_map = dict(
+    [(val, key) for (key, val) in ms_availability_status_name_map.items()])
 
 network_type_name_map = {
     'UNKNOWN': 0x00,
@@ -471,7 +493,8 @@ network_type_name_map = {
     'AMPS': 0x07,
     'PAGING_NETWORK': 0x08,
 }
-network_type_value_map = dict([(val, key) for (key, val) in network_type_name_map.items()])
+network_type_value_map = dict(
+    [(val, key) for (key, val) in network_type_name_map.items()])
 
 bearer_type_name_map = {
     'UNKNOWN': 0x00,
@@ -484,13 +507,15 @@ bearer_type_name_map = {
     'FLEX_REFLEX': 0x07,
     'CELL_BROADCAST': 0x08,
 }
-bearer_type_value_map = dict([(val, key) for (key, val) in bearer_type_name_map.items()])
+bearer_type_value_map = dict(
+    [(val, key) for (key, val) in bearer_type_name_map.items()])
 
 payload_type_name_map = {
     'DEFAULT': 0x00,
     'WCMP': 0x01,
 }
-payload_type_value_map = dict([(val, key) for (key, val) in payload_type_name_map.items()])
+payload_type_value_map = dict(
+    [(val, key) for (key, val) in payload_type_name_map.items()])
 
 privacy_indicator_name_map = {
     'NOT_RESTRICTED': 0x00,
@@ -498,7 +523,8 @@ privacy_indicator_name_map = {
     'CONFIDENTIAL': 0x02,
     'SECRET': 0x03,
 }
-privacy_indicator_value_map = dict([(val, key) for (key, val) in privacy_indicator_name_map.items()])
+privacy_indicator_value_map = dict(
+    [(val, key) for (key, val) in privacy_indicator_name_map.items()])
 
 language_indicator_name_map = {
     'UNSPECIFIED': 0x00,
@@ -508,14 +534,16 @@ language_indicator_name_map = {
     'GERMAN': 0x04,
     'PORTUGUESE': 0x05,
 }
-language_indicator_value_map = dict([(val, key) for (key, val) in language_indicator_name_map.items()])
+language_indicator_value_map = dict(
+    [(val, key) for (key, val) in language_indicator_name_map.items()])
 
 display_time_name_map = {
     'TEMPORARY': 0x00,
     'DEFAULT': 0x01,
     'INVOKE': 0x02,
 }
-display_time_value_map = dict([(val, key) for (key, val) in display_time_name_map.items()])
+display_time_value_map = dict(
+    [(val, key) for (key, val) in display_time_name_map.items()])
 
 delivery_failure_reason_name_map = {
     'DESTINATION_UNAVAILABLE': 0x00,
@@ -523,11 +551,13 @@ delivery_failure_reason_name_map = {
     'PERMANENT_NETWORK_ERROR': 0x02,
     'TEMPORARY_NETWORK_ERROR': 0x03,
 }
-delivery_failure_reason_value_map = dict([(val, key) for (key, val) in delivery_failure_reason_name_map.items()])
+delivery_failure_reason_value_map = dict(
+    [(val, key) for (key, val) in delivery_failure_reason_name_map.items()])
 
 network_error_code_type_name_map = {
     'ANSI-136': 0x01,
     'IS-95': 0x02,
     'GSM': 0x03,
 }
-network_error_code_type_value_map = dict([(val, key) for (key, val) in network_error_code_type_name_map.items()])
+network_error_code_type_value_map = dict(
+    [(val, key) for (key, val) in network_error_code_type_name_map.items()])

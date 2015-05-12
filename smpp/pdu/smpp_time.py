@@ -17,11 +17,13 @@ Copyright 2009-2010 Mozes, Inc.
 from datetime import datetime, tzinfo, timedelta
 from smpp.pdu.namedtuple import namedtuple
 
+
 class FixedOffset(tzinfo):
+
     """Fixed offset in minutes east from UTC."""
 
     def __init__(self, offsetMin, name):
-        self.__offset = timedelta(minutes = offsetMin)
+        self.__offset = timedelta(minutes=offsetMin)
         self.__name = name
 
     def utcoffset(self, dt):
@@ -33,19 +35,23 @@ class FixedOffset(tzinfo):
     def dst(self, dt):
         return timedelta(0)
 
-SMPPRelativeTime = namedtuple('SMPPRelativeTime', 'years, months, days, hours, minutes, seconds')
+SMPPRelativeTime = namedtuple(
+    'SMPPRelativeTime', 'years, months, days, hours, minutes, seconds')
 
 YYMMDDHHMMSS_FORMAT = "%y%m%d%H%M%S"
+
 
 def parse_t(t_str):
     if len(t_str) != 1:
         raise ValueError("tenths of second must be one digit")
     return int(t_str)
 
+
 def unparse_t(t):
     if t < 0 or t > 9:
         raise ValueError("tenths of second must be one digit")
     return '%1d' % t
+
 
 def parse_nn(nn_str):
     if len(nn_str) != 2:
@@ -54,38 +60,41 @@ def parse_nn(nn_str):
     if nn < 0 or nn > 48:
         raise ValueError("time difference must be 0-48")
     return nn
-    
+
+
 def unparse_nn(nn):
     if nn < 0 or nn > 48:
         raise ValueError("time difference must be 0-48")
     return '%02d' % nn
 
+
 def parse_absolute_time(str):
     (YYMMDDhhmmss, t, nn, p) = (str[:12], str[12:13], str[13:15], str[15])
-    
+
     if p not in ['+', '-']:
         raise ValueError("Invalid offset indicator %s" % p)
-    
+
     tenthsOfSeconds = parse_t(t)
     quarterHrOffset = parse_nn(nn)
-    
+
     microseconds = tenthsOfSeconds * 100 * 1000
-    
+
     tzinfo = None
     if quarterHrOffset > 0:
         minOffset = quarterHrOffset * 15
         if p == '-':
             minOffset *= -1
-        tzinfo = FixedOffset(minOffset, None)    
-    
+        tzinfo = FixedOffset(minOffset, None)
+
     timeVal = parse_YYMMDDhhmmss(YYMMDDhhmmss)
-    return timeVal.replace(microsecond=microseconds,tzinfo=tzinfo)
-    
+    return timeVal.replace(microsecond=microseconds, tzinfo=tzinfo)
+
+
 def parse_relative_time(dtstr):
     # example 600 seconds is: '000000001000000R'
 
     try:
-        year =  int(dtstr[:2])
+        year = int(dtstr[:2])
         month = int(dtstr[2:4])
         day = int(dtstr[4:6])
         hour = int(dtstr[6:8])
@@ -95,41 +104,48 @@ def parse_relative_time(dtstr):
 
         # According to spec dsecond should be set to 0
         if dsecond != 0:
-            raise ValueError("SMPP v3.4 spec violation: tenths of second value is %s instead of 0"% dsecond)
+            raise ValueError(
+                "SMPP v3.4 spec violation: tenths of second value is %s instead of 0" % dsecond)
     except IndexError, e:
-        raise ValueError("Error %s : Unable to parse relative Validity Period %s" % e,dtstr)
+        raise ValueError(
+            "Error %s : Unable to parse relative Validity Period %s" % e, dtstr)
 
-    return SMPPRelativeTime(year,month,day,hour,minute,second)
-        
-    
+    return SMPPRelativeTime(year, month, day, hour, minute, second)
+
+
 def parse_YYMMDDhhmmss(YYMMDDhhmmss):
     return datetime.strptime(YYMMDDhhmmss, YYMMDDHHMMSS_FORMAT)
-    
+
+
 def unparse_YYMMDDhhmmss(dt):
     return dt.strftime(YYMMDDHHMMSS_FORMAT)
-    
+
+
 def unparse_absolute_time(dt):
     if not isinstance(dt, datetime):
         raise ValueError("input must be a datetime but got %s" % type(dt))
     YYMMDDhhmmss = unparse_YYMMDDhhmmss(dt)
-    tenthsOfSeconds = dt.microsecond/(100*1000)
+    tenthsOfSeconds = dt.microsecond / (100 * 1000)
     quarterHrOffset = 0
     p = '+'
     if dt.tzinfo is not None:
         utcOffset = dt.tzinfo.utcoffset(datetime.now())
         utcOffsetSecs = utcOffset.days * 60 * 60 * 24 + utcOffset.seconds
-        quarterHrOffset =  utcOffsetSecs / (15*60)
+        quarterHrOffset = utcOffsetSecs / (15 * 60)
         if quarterHrOffset < 0:
             p = '-'
             quarterHrOffset *= -1
     return YYMMDDhhmmss + unparse_t(tenthsOfSeconds) + unparse_nn(quarterHrOffset) + p
 
+
 def unparse_relative_time(rel):
     if not isinstance(rel, SMPPRelativeTime):
         raise ValueError("input must be a SMPPRelativeTime")
-    relstr = "%s%s%s%s%s%s000R" % (str("%.2d" % rel.years), str("%.2d" % rel.months), str("%.2d" % rel.days), str("%.2d" % rel.hours), str("%.2d" % rel.minutes), str("%.2d" % rel.seconds))
+    relstr = "%s%s%s%s%s%s000R" % (str("%.2d" % rel.years), str("%.2d" % rel.months), str(
+        "%.2d" % rel.days), str("%.2d" % rel.hours), str("%.2d" % rel.minutes), str("%.2d" % rel.seconds))
 
     return relstr
+
 
 def parse(str):
     """Takes an SMPP time string in.
@@ -142,7 +158,8 @@ def parse(str):
     if (str[-1]) == 'R':
         return parse_relative_time(str)
     return parse_absolute_time(str)
-    
+
+
 def unparse(dt_or_rel):
     """Takes in either a datetime or an SMPPRelativeTime
     Returns an SMPP time string
@@ -150,6 +167,3 @@ def unparse(dt_or_rel):
     if isinstance(dt_or_rel, SMPPRelativeTime):
         return unparse_relative_time(dt_or_rel)
     return unparse_absolute_time(dt_or_rel)
-    
-    
-

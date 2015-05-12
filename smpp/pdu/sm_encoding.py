@@ -13,7 +13,8 @@ Copyright 2009-2010 Mozes, Inc.
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-import struct, StringIO
+import struct
+import StringIO
 from smpp.pdu.operations import DeliverSM, DataSM
 from smpp.pdu.pdu_types import *
 from smpp.pdu.namedtuple import namedtuple
@@ -21,6 +22,7 @@ from smpp.pdu.gsm_types import InformationElementIdentifier
 from smpp.pdu.gsm_encoding import UserDataHeaderEncoder
 
 ShortMessageString = namedtuple('ShortMessageString', 'bytes, unicode, udh')
+
 
 class SMStringEncoder(object):
     userDataHeaderEncoder = UserDataHeaderEncoder()
@@ -34,7 +36,8 @@ class SMStringEncoder(object):
             if data_coding.scheme == DataCodingScheme.DEFAULT:
                 unicodeStr = None
                 if data_coding.schemeData == DataCodingDefault.SMSC_DEFAULT_ALPHABET:
-                    unicodeStr = unicode(smStrBytes, smsc_default_alphabet_encoding)
+                    unicodeStr = unicode(
+                        smStrBytes, smsc_default_alphabet_encoding)
                 elif data_coding.schemeData == DataCodingDefault.IA5_ASCII:
                     unicodeStr = unicode(smStrBytes, 'ascii')
                 elif data_coding.schemeData == DataCodingDefault.UCS2:
@@ -42,7 +45,8 @@ class SMStringEncoder(object):
                 elif data_coding.schemeData == DataCodingDefault.LATIN_1:
                     unicodeStr = unicode(smStrBytes, 'latin_1')
                 elif data_coding.schemeData == DataCodingDefault.OCTET_UNSPECIFIED_COMMON:
-                    unicodeStr = unicode(smStrBytes, 'latin_1', errors='ignore')
+                    unicodeStr = unicode(
+                        smStrBytes, 'latin_1', errors='ignore')
                 if unicodeStr is not None:
                     return ShortMessageString(smBytes, unicodeStr, udh)
 
@@ -63,7 +67,8 @@ class SMStringEncoder(object):
 
             raise e
 
-        raise NotImplementedError("I don't know what to do!!! Data coding %s" % str(data_coding))
+        raise NotImplementedError(
+            "I don't know what to do!!! Data coding %s" % str(data_coding))
 
     def containsUDH(self, pdu):
         if EsmClassGsmFeatures.UDHI_INDICATOR_SET in pdu.params['esm_class'].gsmFeatures:
@@ -81,7 +86,8 @@ class SMStringEncoder(object):
         return self.findConcatenatedSMInfoElement(udh)
 
     def findConcatenatedSMInfoElement(self, udh):
-        iElems = [iElem for iElem in udh if iElem.identifier in (InformationElementIdentifier.CONCATENATED_SM_8BIT_REF_NUM, InformationElementIdentifier.CONCATENATED_SM_16BIT_REF_NUM)]
+        iElems = [iElem for iElem in udh if iElem.identifier in (
+            InformationElementIdentifier.CONCATENATED_SM_8BIT_REF_NUM, InformationElementIdentifier.CONCATENATED_SM_16BIT_REF_NUM)]
         assert len(iElems) <= 1
         if len(iElems) == 1:
             return iElems[0]
@@ -103,6 +109,7 @@ class SMStringEncoder(object):
                 raise ValueError("Empty short message")
             headerLen = struct.unpack('!B', short_message[0])[0]
             if headerLen + 1 > len(short_message):
-                raise ValueError("Invalid header len (%d). Longer than short_message len (%d) + 1" % (headerLen, len(short_message)))
-            return (short_message, short_message[:headerLen+1], short_message[headerLen+1:])
+                raise ValueError(
+                    "Invalid header len (%d). Longer than short_message len (%d) + 1" % (headerLen, len(short_message)))
+            return (short_message, short_message[:headerLen + 1], short_message[headerLen + 1:])
         return (short_message, None, short_message)

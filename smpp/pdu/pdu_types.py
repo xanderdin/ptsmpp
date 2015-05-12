@@ -31,6 +31,7 @@ EsmClassGsmFeatures = Enum(*constants.esm_class_gsm_features_name_map.keys())
 
 EsmClassBase = namedtuple('EsmClass', 'mode, type, gsmFeatures')
 
+
 class EsmClass(EsmClassBase):
 
     def __new__(cls, mode, type, gsmFeatures=[]):
@@ -39,10 +40,14 @@ class EsmClass(EsmClassBase):
     def __repr__(self):
         return 'EsmClass[mode: %s, type: %s, gsmFeatures: %s]' % (self.mode, self.type, self.gsmFeatures)
 
-RegisteredDeliveryReceipt = Enum(*constants.registered_delivery_receipt_name_map.keys())
-RegisteredDeliverySmeOriginatedAcks = Enum(*constants.registered_delivery_sme_originated_acks_name_map.keys())
+RegisteredDeliveryReceipt = Enum(
+    *constants.registered_delivery_receipt_name_map.keys())
+RegisteredDeliverySmeOriginatedAcks = Enum(
+    *constants.registered_delivery_sme_originated_acks_name_map.keys())
 
-RegisteredDeliveryBase = namedtuple('RegisteredDelivery', 'receipt, smeOriginatedAcks, intermediateNotification')
+RegisteredDeliveryBase = namedtuple(
+    'RegisteredDelivery', 'receipt, smeOriginatedAcks, intermediateNotification')
+
 
 class RegisteredDelivery(RegisteredDeliveryBase):
 
@@ -57,12 +62,16 @@ AddrNpi = Enum(*constants.addr_npi_name_map.keys())
 PriorityFlag = Enum(*constants.priority_flag_name_map.keys())
 ReplaceIfPresentFlag = Enum(*constants.replace_if_present_flap_name_map.keys())
 
-DataCodingScheme = Enum('RAW', 'DEFAULT', *constants.data_coding_scheme_name_map.keys())
+DataCodingScheme = Enum(
+    'RAW', 'DEFAULT', *constants.data_coding_scheme_name_map.keys())
 DataCodingDefault = Enum(*constants.data_coding_default_name_map.keys())
-DataCodingGsmMsgCoding = Enum(*constants.data_coding_gsm_message_coding_name_map.keys())
-DataCodingGsmMsgClass = Enum(*constants.data_coding_gsm_message_class_name_map.keys())
+DataCodingGsmMsgCoding = Enum(
+    *constants.data_coding_gsm_message_coding_name_map.keys())
+DataCodingGsmMsgClass = Enum(
+    *constants.data_coding_gsm_message_class_name_map.keys())
 
 DataCodingGsmMsgBase = namedtuple('DataCodingGsmMsg', 'msgCoding, msgClass')
+
 
 class DataCodingGsmMsg(DataCodingGsmMsgBase):
 
@@ -94,10 +103,14 @@ class DataCoding(object):
 
 DestFlag = Enum(*constants.dest_flag_name_map.keys())
 MessageState = Enum(*constants.message_state_name_map.keys())
-CallbackNumDigitModeIndicator = Enum(*constants.callback_num_digit_mode_indicator_name_map.keys())
+CallbackNumDigitModeIndicator = Enum(
+    *constants.callback_num_digit_mode_indicator_name_map.keys())
 SubaddressTypeTag = Enum(*constants.subaddress_type_tag_name_map.keys())
 
-CallbackNumBase = namedtuple('CallbackNum', 'digitModeIndicator, ton, npi, digits')
+CallbackNumBase = namedtuple(
+    'CallbackNum', 'digitModeIndicator, ton, npi, digits')
+
+
 class CallbackNum(CallbackNumBase):
 
     def __new__(cls, digitModeIndicator, ton=AddrTon.UNKNOWN, npi=AddrNpi.UNKNOWN, digits=None):
@@ -107,6 +120,8 @@ class CallbackNum(CallbackNumBase):
         return 'CallbackNum[digitModeIndicator: %s, ton: %s, npi: %s, digits: %s]' % (self.digitModeIndicator, self.ton, self.npi, self.digits)
 
 SubaddressBase = namedtuple('Subaddress', 'typeTag, value')
+
+
 class Subaddress(SubaddressBase):
 
     def __new__(cls, typeTag, value):
@@ -117,7 +132,10 @@ class Subaddress(SubaddressBase):
 
 
 NetworkErrorCodeBase = namedtuple('NetworkErrorCode', 'NetworkType, ErrorCode')
+
+
 class NetworkErrorCode(NetworkErrorCodeBase):
+
     def __new__(cls, NetworkType, ErrorCode):
         return NetworkErrorCodeBase.__new__(cls, NetworkType, ErrorCode)
 
@@ -133,9 +151,12 @@ PrivacyIndicator = Enum(*constants.privacy_indicator_name_map.keys())
 LanguageIndicator = Enum(*constants.language_indicator_name_map.keys())
 DisplayTime = Enum(*constants.display_time_name_map.keys())
 MsAvailabilityStatus = Enum(*constants.ms_availability_status_name_map.keys())
-DeliveryFailureReason = Enum(*constants.delivery_failure_reason_name_map.keys())
-NetworkErrorCodeNetworkType = Enum(*constants.network_error_code_type_name_map.keys())
+DeliveryFailureReason = Enum(
+    *constants.delivery_failure_reason_name_map.keys())
+NetworkErrorCodeNetworkType = Enum(
+    *constants.network_error_code_type_name_map.keys())
 MoreMessagesToSend = Enum(*constants.more_messages_to_send_name_map.keys())
+
 
 class PDU(object):
     commandId = None
@@ -157,7 +178,8 @@ class PDU(object):
         short_message or message_payload can contain UTF-16 data so we just
         use repr there.
         """
-        r = "PDU [command: %s, sequence_number: %s, command_status: %s" % (self.id, self.seqNum, self.status)
+        r = "PDU [command: %s, sequence_number: %s, command_status: %s" % (
+            self.id, self.seqNum, self.status)
         for mParam in self.mandatoryParams:
             if mParam in self.params:
                 if mParam == 'short_message':
@@ -188,8 +210,10 @@ class PDU(object):
     def __ne__(self, other):
         return not self.__eq__(other)
 
+
 class PDURequest(PDU):
     requireAck = None
+
 
 class PDUResponse(PDU):
     noBodyOnError = False
