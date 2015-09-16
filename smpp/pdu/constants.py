@@ -555,6 +555,7 @@ delivery_failure_reason_value_map = dict(
     [(val, key) for (key, val) in delivery_failure_reason_name_map.items()])
 
 network_error_code_type_name_map = {
+    'UNKNOWN': 0x00,
     'ANSI-136': 0x01,
     'IS-95': 0x02,
     'GSM': 0x03,
