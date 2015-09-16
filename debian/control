@@ -1,0 +1,18 @@
+Source: ptsmpp
+Maintainer: Alexander Pravdin <aledin@mail.ru>
+Section: python
+Priority: optional
+Build-Depends: python-setuptools (>= 0.6b3), python-all (>= 2.6.6-3), debhelper (>= 9), dh-python
+Standards-Version: 3.9.6
+
+Package: python-ptsmpp
+Architecture: all
+Depends: ${misc:Depends}, python (>= 2.7.3-4), python-twisted (>= 12.0.0-1), python-openssl (>= 0.13)
+Description: PTSMPP - Python Twisted SMPP 3.4 client library
+ .
+ This is a mixdown version of smpp.pdu and smpp.twisted packages found on github.
+ It also includes enum package. The enum package was put to ptsmpp package in order
+ to eliminate a dependency conflict: the smpp.twisted package requires pyOpenSSL
+ package, which requires cryptography package, which requires enum34 package, which
+ conflicts with the enum package, which is required by both smpp.pdu and smpp.twisted
+ packages.
