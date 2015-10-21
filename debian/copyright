@@ -17,8 +17,7 @@ Copyright: 2015 Alexander Pravdin <aledin@mail.ru>
            2010-2013 Roger Hoover <roger.hoover@gmail.com>
            2010-2013 Mozes, Inc.
            2009 Ben Finney <ben+python@benfinney.id.au>
-
-License: Apache-2.0, GPL, Python
+License: Apache-2.0, and GPL-2 or Python
 
 Files: debian/*
 Copyright: 2015 Alexander Pravdin <aledin@mail.ru>
@@ -40,3 +39,8 @@ License: Apache-2.0
  On Debian systems, the complete text of the Apache version 2.0 license
  can be found in "/usr/share/common-licenses/Apache-2.0".
 
+License: GPL-2
+ /usr/share/common-licenses/GPL-2
+
+License: Python
+ http://opensource.org/licenses/Python-2.0

@@ -3,4 +3,4 @@ include README.md
 include requirements.txt
 graft origin
 graft debian
-recursive-exclude ptsmpp *.py[co]
+recursive-exclude ptsmpp *.py[cod]
